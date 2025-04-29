@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+body.terminal {
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Share Tech Mono', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.terminal-screen {
+    width: 90%;
+    max-width: 800px;
+    border: 2px solid var(--border-color);
+    padding: 10px;
+    background-color: var(--background-color);
+    box-shadow: 0 0 10px var(--border-color), 0 0 20px var(--border-color);
+    overflow-y: auto;
+    height: 90vh;
+}
+
+.terminal-header {
+    background-color: var(--border-color);
+    color: var(--header-text-color);
+    padding: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+
+.terminal-body {
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+pre {
+    margin: 0 0 10px 0;
+}
+
+.terminal-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.terminal-button {
+    margin-top: 5px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.terminal-button:hover {
+    background-color: var(--border-color);
+    color: var(--background-color);
+}
+
+/* Blinking cursor */
+.blink-cursor {
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
