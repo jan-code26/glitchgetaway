@@ -8,7 +8,7 @@ from glitchgetaway.settings import \
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'glitchgetaway.settings')
 
 application = get_wsgi_application()
-application = WhiteNoise(application, root=os.path.join(BASE_DIR, 'staticfiles'))
+application = WhiteNoise(application)
 
 # 🔥 After Django is fully ready, then you can use models safely
 try:
