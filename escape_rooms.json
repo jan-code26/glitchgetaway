@@ -1,1 +1,57 @@
-[{"model": "escape.room", "pk": 1, "fields": {"title": "Room 1: HTML Escape", "description": "Welcome! Your first glitch is broken HTML.", "puzzle_question": "What is the correct closing tag for an HTML paragraph?", "puzzle_answer": "</p>"}}, {"model": "escape.room", "pk": 2, "fields": {"title": "Room 2: CSS Confusion", "description": "Colors are messed up. Fix it!", "puzzle_question": "In CSS, what property changes the text color?", "puzzle_answer": "color"}}, {"model": "escape.room", "pk": 3, "fields": {"title": "Room 3: JS Madness", "description": "Time to fix a broken JavaScript function!", "puzzle_question": "In JavaScript, what keyword is used to declare a variable?", "puzzle_answer": "var"}}, {"model": "escape.room", "pk": 4, "fields": {"title": "Room 4: Python Problem", "description": "The glitch spreads to Python scripts!", "puzzle_question": "In Python, how do you print \"Hello World\"?", "puzzle_answer": "print(\"Hello World\")"}}, {"model": "escape.room", "pk": 5, "fields": {"title": "Room 5: The Final Firewall", "description": "Last glitch to escape!", "puzzle_question": "What HTTP status code means \"Not Found\"?", "puzzle_answer": "404"}}]
+[
+  {
+    "model": "escape.room",
+    "pk": 1,
+    "id": 1,
+    "fields": {
+      "title": "Room 1: HTML Escape",
+      "description": "Welcome! Your first glitch is broken HTML.",
+      "puzzle_question": "What is the correct closing tag for an HTML paragraph?",
+      "puzzle_answer": "</p>"
+    }
+  },
+  {
+    "model": "escape.room",
+    "pk": 2,
+    "id": 2,
+    "fields": {
+      "title": "Room 2: CSS Confusion",
+      "description": "Colors are messed up. Fix it!",
+      "puzzle_question": "In CSS, what property changes the text color?",
+      "puzzle_answer": "color"
+    }
+  },
+  {
+    "model": "escape.room",
+    "pk": 3,
+    "id": 3,
+    "fields": {
+      "title": "Room 3: JS Madness",
+      "description": "Time to fix a broken JavaScript function!",
+      "puzzle_question": "In JavaScript, what keyword is used to declare a variable?",
+      "puzzle_answer": "var"
+    }
+  },
+  {
+    "model": "escape.room",
+    "pk": 4,
+    "id": 4,
+    "fields": {
+      "title": "Room 4: Python Problem",
+      "description": "The glitch spreads to Python scripts!",
+      "puzzle_question": "In Python, how do you print \"Hello World\"?",
+      "puzzle_answer": "print(\"Hello World\")"
+    }
+  },
+  {
+    "model": "escape.room",
+    "pk": 5,
+    "id": 5,
+    "fields": {
+      "title": "Room 5: The Final Firewall",
+      "description": "Last glitch to escape!",
+      "puzzle_question": "What HTTP status code means \"Not Found\"?",
+      "puzzle_answer": "404"
+    }
+  }
+]
