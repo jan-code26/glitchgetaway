@@ -2,6 +2,9 @@ import os
 from django.core.wsgi import get_wsgi_application
 from whitenoise import WhiteNoise
 
+from glitchgetaway.settings import \
+    BASE_DIR
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'glitchgetaway.settings')
 
 application = get_wsgi_application()
