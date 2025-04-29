@@ -13,9 +13,18 @@ def home(request):
     return redirect('room')
 
 
+from django.shortcuts import get_object_or_404
+
 def room_view(request):
     room_id = request.session.get('current_room_id')
-    room = Room.objects.get(id=room_id)
+
+    # Safely fetch the room
+    room = Room.objects.filter(id=room_id).first()
+
+    if not room:
+        # Room not found -> reset session and redirect to home
+        request.session.flush()
+        return redirect('home')
 
     if request.method == 'POST':
         answer = request.POST.get('answer', '').strip().lower()
