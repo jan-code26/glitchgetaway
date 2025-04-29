@@ -2,12 +2,16 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from .models import Room
+from django.http import HttpResponse
 
 def home(request):
     if 'current_room_id' not in request.session:
         first_room = Room.objects.first()
+        if not first_room:
+            return HttpResponse("No rooms available. Please contact administrator.", status=500)
         request.session['current_room_id'] = first_room.id
     return redirect('room')
+
 
 def room_view(request):
     room_id = request.session.get('current_room_id')
