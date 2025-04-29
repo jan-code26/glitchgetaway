@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        System
+        Rebooted</title>
+    <link rel="stylesheet"
+          href="{% static 'escape/style.css' %}">
+</head>
+<body class="terminal"
+      style="
+  --background-color: black;
+  --text-color: #00FF00;
+  --border-color: #00FF00;
+  --header-text-color: black;
+">
+<div class="terminal-screen">
+    <div class="terminal-header">
+        <p>
+            GlitchGetaway
+            v1.0
+            -
+            SYSTEM
+            REBOOT
+            SUCCESS</p>
+    </div>
+    <div class="terminal-body">
+        <pre>[[ SYSTEM STATUS ]]</pre>
+        <pre class="flicker">>_ All corrupted sectors repaired.</pre>
+        <pre class="flicker">>_ Escape successful. Welcome back, Commander!</pre>
+        <pre>[[ END OF TRANSMISSION ]]</pre>
+
+        <br>
+
+        <a href="{% url 'home' %}"
+           style="color: #00FF00; text-decoration: underline;">Restart
+            Mission</a>
+    </div>
+</div>
+</body>
+</html>
