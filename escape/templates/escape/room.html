@@ -10,6 +10,7 @@
         Terminal</title>
     <link rel="stylesheet"
           href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="terminal">
 <button id="theme-switcher"
@@ -37,8 +38,8 @@
             <pre class="flicker error">{{ error }}</pre>
         {% endif %}
 
-        <span id="user-typing"
-              class="blink-cursor"></span>
+        <pre>>> <span id="user-typing" class="blink-cursor"></span></pre>
+
 
         <form id="hidden-form"
               method="POST"

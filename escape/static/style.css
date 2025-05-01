@@ -89,3 +89,29 @@ pre {
 pre.flicker.error {
     color: red;
 }
+
+@media screen and (max-width: 768px) {
+    .terminal-screen {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .terminal-pane {
+        min-height: auto;
+    }
+
+    .terminal-body {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .terminal-header {
+        font-size: 13px;
+        padding: 6px;
+    }
+
+    .blink-cursor {
+        font-size: 16px;
+    }
+}
