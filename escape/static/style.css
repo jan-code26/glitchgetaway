@@ -13,19 +13,17 @@ body.terminal {
 }
 
 .terminal-screen {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-    width: 100%;
+    width: 95%;
+    max-width: 800px;
+    border: 2px solid var(--border-color);
+    padding: 10px;
+    background-color: var(--background-color);
+    box-shadow: 0 0 10px var(--border-color), 0 0 20px var(--border-color);
+    overflow-y: auto;
+    height: auto;
+    min-height: 90vh;
     box-sizing: border-box;
-    flex-wrap: wrap;
 }
-
 
 .terminal-header {
     background-color: var(--border-color);
@@ -95,25 +93,26 @@ pre.flicker.error {
 }
 
 @media screen and (max-width: 768px) {
-    .terminal-screen {
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px;
+    body.terminal {
+        padding: 10px;
     }
 
-    .terminal-pane {
+    .terminal-screen {
         width: 100%;
-        min-height: auto;
+        padding: 8px;
+        box-shadow: none;
+        border: 1px solid var(--border-color);
+    }
+
+    .terminal-header {
+        font-size: 13px;
+        padding: 6px;
     }
 
     .terminal-body {
         font-size: 15px;
-        padding: 10px;
-    }
-
-    .terminal-header {
-        font-size: 15px;
         padding: 8px;
+        line-height: 1.4;
     }
 
     .blink-cursor {
@@ -125,6 +124,12 @@ pre.flicker.error {
         right: 5px;
         font-size: 12px;
         padding: 4px 8px;
+    }
+
+    pre {
+        font-size: 15px;
+        word-break: break-word;
+        white-space: pre-wrap;
     }
 }
 
