@@ -3,27 +3,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>
-        Glitch
-        Getaway
-        -
-        Terminal</title>
-    <link rel="stylesheet"
-          href="{% static 'style.css' %}">
+    <title>Glitch Getaway - Terminal</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="terminal">
+
 <button id="theme-switcher"
         style="position: fixed; top: 10px; right: 10px; padding: 5px 10px; cursor: pointer;">
-    Switch
-    Theme
+    Switch Theme
 </button>
 
 <div class="terminal-screen">
     <div class="terminal-header">
-        <p>
-            GlitchGetaway
-            v1.0</p>
+        <p>GlitchGetaway v1.0</p>
     </div>
     <div class="terminal-body">
         <pre class="flicker">[[ PROGRESS ]] {{ progress.bar }} {{ progress.solved }}/{{ progress.total }}</pre>
@@ -38,20 +31,16 @@
             <pre class="flicker error">{{ error }}</pre>
         {% endif %}
 
-        <pre>>> <span id="user-typing" class="blink-cursor"></span></pre>
+        <pre>>> <input id="terminal-input" class="terminal-input blink-cursor"
+                       autocomplete="off" autocorrect="off" spellcheck="false" /></pre>
 
-
-        <form id="hidden-form"
-              method="POST"
-              style="display:none;">
+        <form id="hidden-form" method="POST" style="display:none;">
             {% csrf_token %}
-            <input type="hidden"
-                   name="answer"
-                   id="hidden-answer">
+            <input type="hidden" name="answer" id="hidden-answer">
         </form>
     </div>
 </div>
-<input id="mobile-input" style="position:absolute; left:-9999px;" autofocus>
+
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const body = document.querySelector('body');
@@ -90,78 +79,41 @@
             }
         }
 
-        // 🧠 Command History Navigation
+        // Terminal Input Logic
         let currentInput = '';
         let commandHistory = JSON.parse(sessionStorage.getItem('history') || '[]');
         let historyIndex = commandHistory.length;
 
-        const userTyping = document.getElementById('user-typing');
+        const terminalInput = document.getElementById('terminal-input');
         const hiddenForm = document.getElementById('hidden-form');
         const hiddenAnswer = document.getElementById('hidden-answer');
 
-        const mobileInput = document.getElementById('mobile-input');
+        // Focus input always on load
+        terminalInput.focus();
 
-// Always keep input focused so the mobile keyboard stays visible
-        setInterval(() => {
-            if (document.activeElement !== mobileInput) {
-                mobileInput.focus();
-            }
-        }, 500);
-
-// Mirror typing to the fake terminal
-        mobileInput.addEventListener('input', () => {
-            currentInput = mobileInput.value;
-            userTyping.textContent = currentInput + '|';
-        });
-
-// Support Enter from virtual keyboard
-        mobileInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                if (currentInput.trim() !== '') {
-                    commandHistory.push(currentInput);
-                    sessionStorage.setItem('history', JSON.stringify(commandHistory));
-                    historyIndex = commandHistory.length;
-                }
-
-                hiddenAnswer.value = currentInput;
-                hiddenForm.submit();
-                currentInput = '';
-                mobileInput.value = '';
-                userTyping.textContent = '|';
-            }
-        });
-
-        // 🧹 Clear history per room load
-        sessionStorage.removeItem('history');
-
-        document.addEventListener('keydown', function (e) {
+        terminalInput.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (historyIndex > 0) {
                     historyIndex--;
-                    currentInput = commandHistory[historyIndex];
-                    userTyping.textContent = currentInput + '|';
+                    terminalInput.value = commandHistory[historyIndex];
                 }
-                return;
             }
 
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 if (historyIndex < commandHistory.length - 1) {
                     historyIndex++;
-                    currentInput = commandHistory[historyIndex];
+                    terminalInput.value = commandHistory[historyIndex];
                 } else {
                     historyIndex = commandHistory.length;
-                    currentInput = '';
+                    terminalInput.value = '';
                 }
-                userTyping.textContent = currentInput + '|';
-                return;
             }
 
-            if (e.key === 'Backspace') {
-                currentInput = currentInput.slice(0, -1);
-            } else if (e.key === 'Enter') {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                currentInput = terminalInput.value;
                 if (currentInput.trim() !== '') {
                     commandHistory.push(currentInput);
                     sessionStorage.setItem('history', JSON.stringify(commandHistory));
@@ -170,12 +122,9 @@
 
                 hiddenAnswer.value = currentInput;
                 hiddenForm.submit();
+                terminalInput.value = '';
                 currentInput = '';
-            } else if (e.key.length === 1) {
-                currentInput += e.key;
             }
-
-            userTyping.textContent = currentInput + '|';
         });
     });
 </script>
