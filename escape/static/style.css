@@ -73,13 +73,12 @@ pre {
 /* Blinking cursor */
 .blink-cursor {
     font-weight: bold;
-    animation: blink 1s infinite;
+    animation: blink-caret 1s step-start infinite;
 }
 
-@keyframes blink {
-    0% { opacity: 1; }
+@keyframes blink-caret {
+    0%, 100% { opacity: 1; }
     50% { opacity: 0; }
-    100% { opacity: 1; }
 }
 
 #terminal-history {
@@ -91,6 +90,22 @@ pre {
 pre.flicker.error {
     color: red;
 }
+
+.blink-success {
+    display: inline-block;
+    animation: blink-fast 1s step-start infinite;
+    font-weight: bold;
+    font-size: 18px;
+    color: #00FF00;
+    text-align: center;
+    text-shadow: 0 0 5px #00FF00;
+}
+
+@keyframes blink-fast {
+    0%, 50% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+}
+
 
 @media screen and (max-width: 768px) {
     html, body {
@@ -132,7 +147,14 @@ pre.flicker.error {
     }
 
     .blink-cursor {
-        font-size: 18px;
+        display: inline-block;
+        animation: blink-caret 1s step-start infinite;
+        font: 18px 'Share Tech Mono', monospace;
+    }
+
+    @keyframes blink-caret {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
     }
 
     #theme-switcher {
@@ -141,6 +163,21 @@ pre.flicker.error {
         top: 8px;
         right: 8px;
     }
+}
+
+.flicker {
+    animation: flicker-animation 1.5s infinite;
+}
+
+@keyframes flicker-animation {
+    0%   { opacity: 1; }
+    5%   { opacity: 0.4; }
+    10%  { opacity: 0.8; }
+    15%  { opacity: 0.5; }
+    20%  { opacity: 1; }
+    25%  { opacity: 0.3; }
+    30%  { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
 

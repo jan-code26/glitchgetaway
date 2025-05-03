@@ -3,13 +3,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>
-        System
-        Rebooted</title>
+    <title>System Rebooted</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="terminal"
-      style="
+<body class="terminal" style="
   --background-color: black;
   --text-color: #00FF00;
   --border-color: #00FF00;
@@ -17,25 +15,24 @@
 ">
 <div class="terminal-screen">
     <div class="terminal-header">
-        <p>
-            GlitchGetaway
-            v1.0
-            -
-            SYSTEM
-            REBOOT
-            SUCCESS</p>
+        <p>GlitchGetaway v1.0 - SYSTEM UNLOCKED</p>
     </div>
     <div class="terminal-body">
-        <pre>[[ SYSTEM STATUS ]]</pre>
-        <pre class="flicker">>_ All corrupted sectors repaired.</pre>
-        <pre class="flicker">>_ Escape successful. Welcome back, Commander!</pre>
+        <pre class="flicker">[[ SYSTEM STATUS ]]</pre>
+        <pre>>_ All corrupted sectors repaired.</pre>
+        <pre>>_ Memory chain restored.</pre>
+        <pre class="flicker blink-success">>> SYSTEM UNLOCKED <<</pre>
+        <pre>
+        ┌───────────────────────────┐
+        │  ESCAPE SUCCESSFUL        │
+        │  Welcome back, Commander  │
+        └───────────────────────────┘
+        </pre>
+
         <pre>[[ END OF TRANSMISSION ]]</pre>
 
         <br>
-
-        <a href="{% url 'home' %}"
-           style="color: #00FF00; text-decoration: underline;">Restart
-            Mission</a>
+        <a href="{% url 'home' %}" class="terminal-button" style="text-decoration: none;">Restart Mission</a>
     </div>
 </div>
 </body>
