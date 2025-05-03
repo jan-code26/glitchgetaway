@@ -99,6 +99,39 @@
         const hiddenForm = document.getElementById('hidden-form');
         const hiddenAnswer = document.getElementById('hidden-answer');
 
+        const mobileInput = document.getElementById('mobile-input');
+
+// Always keep input focused so the mobile keyboard stays visible
+        setInterval(() => {
+            if (document.activeElement !== mobileInput) {
+                mobileInput.focus();
+            }
+        }, 500);
+
+// Mirror typing to the fake terminal
+        mobileInput.addEventListener('input', () => {
+            currentInput = mobileInput.value;
+            userTyping.textContent = currentInput + '|';
+        });
+
+// Support Enter from virtual keyboard
+        mobileInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentInput.trim() !== '') {
+                    commandHistory.push(currentInput);
+                    sessionStorage.setItem('history', JSON.stringify(commandHistory));
+                    historyIndex = commandHistory.length;
+                }
+
+                hiddenAnswer.value = currentInput;
+                hiddenForm.submit();
+                currentInput = '';
+                mobileInput.value = '';
+                userTyping.textContent = '|';
+            }
+        });
+
         // 🧹 Clear history per room load
         sessionStorage.removeItem('history');
 
@@ -146,6 +179,6 @@
         });
     });
 </script>
-
+<input id="mobile-input" style="position:absolute; left:-9999px;" autofocus>
 </body>
 </html>
