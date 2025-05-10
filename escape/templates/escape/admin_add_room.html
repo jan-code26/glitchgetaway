@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Room - Glitch Getaway</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="terminal">
+<button id="theme-switcher"
+        style="position: fixed; top: 10px; right: 10px; padding: 5px 10px; cursor: pointer;">
+    Switch Theme
+</button>
+
+<div class="terminal-screen">
+    <div class="terminal-header">
+        <p>GlitchGetaway Admin - Add New Room</p>
+    </div>
+    <div class="terminal-body">
+        <form method="POST">
+            {% csrf_token %}
+            <pre>> Title: <input type="text" name="title" class="terminal-input" required></pre>
+            <pre>> Description: <input type="text" name="description" class="terminal-input" required></pre>
+            <pre>> Puzzle Question: <input type="text" name="question" class="terminal-input" required></pre>
+            <pre>> Answer: <input type="text" name="answer" class="terminal-input" required></pre>
+            <pre>> Hint: <input type="text" name="hint" class="terminal-input" required></pre>
+            <!-- Hidden fallback submit -->
+            <button type="submit" style="display: none;"></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const body = document.querySelector('body');
+        let theme = localStorage.getItem('theme');
+
+        if (!theme) {
+            const hr = new Date().getHours();
+            theme = (hr >= 7 && hr <= 19) ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+        }
+
+        applyTheme(theme);
+
+        const switcher = document.getElementById('theme-switcher');
+        let darkMode = (theme === 'dark');
+
+        switcher.addEventListener('click', () => {
+            darkMode = !darkMode;
+            theme = darkMode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        });
+
+        function applyTheme(theme) {
+            const styles = {
+                light: { bg: 'white', text: 'black', border: 'black', header: 'white' },
+                dark: { bg: 'black', text: '#00FF00', border: '#00FF00', header: 'black' }
+            };
+            const t = styles[theme];
+            body.style.setProperty('--background-color', t.bg);
+            body.style.setProperty('--text-color', t.text);
+            body.style.setProperty('--border-color', t.border);
+            body.style.setProperty('--header-text-color', t.header);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="terminal">
+<button id="theme-switcher"
+        style="position: fixed; top: 10px; right: 10px; padding: 5px 10px; cursor: pointer;">
+    Switch Theme
+</button>
+
+<div class="terminal-screen">
+    <div class="terminal-header">
+        <p>GlitchGetaway Admin Access</p>
+    </div>
+    <div class="terminal-body">
+        <form method="POST">
+            {% csrf_token %}
+            <pre>> Enter admin access code to continue:</pre>
+            <pre>> <input type="password" name="admin_code" class="terminal-input blink-cursor" autofocus></pre>
+        </form>
+    </div>
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const body = document.querySelector('body');
+        let theme = localStorage.getItem('theme');
+
+        if (!theme) {
+            const currentHour = new Date().getHours();
+            theme = (currentHour >= 7 && currentHour <= 19) ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+        }
+
+        applyTheme(theme);
+
+        const switcher = document.getElementById('theme-switcher');
+        let darkMode = (theme === 'dark');
+
+        switcher.addEventListener('click', () => {
+            darkMode = !darkMode;
+            theme = darkMode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        });
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.style.setProperty('--background-color', 'white');
+                body.style.setProperty('--text-color', 'black');
+                body.style.setProperty('--border-color', 'black');
+                body.style.setProperty('--header-text-color', 'white');
+            } else {
+                body.style.setProperty('--background-color', 'black');
+                body.style.setProperty('--text-color', '#00FF00');
+                body.style.setProperty('--border-color', '#00FF00');
+                body.style.setProperty('--header-text-color', 'black');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

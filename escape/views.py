@@ -4,6 +4,9 @@ from django.shortcuts import render, redirect
 from .models import Room
 from django.http import HttpResponse
 import random
+from django.contrib.auth.decorators import login_required
+import json
+from django.contrib import messages
 
 def home(request):
     if 'current_room_id' not in request.session:
@@ -31,6 +34,13 @@ def room_view(request):
     error = None
     if request.method == 'POST':
         answer = request.POST.get('answer', '').strip().lower()
+        if answer.startswith("sudo login"):
+            code = answer.split()[-1]
+            if code == "admin123":
+                request.session['is_admin'] = True
+                return redirect('admin_terminal')
+            else:
+                error = "[[ ACCESS DENIED ]] Invalid admin code."
         room_id = room.id
 
         # Initialize attempts tracker
@@ -105,3 +115,87 @@ def get_progress(request):
     solved = Room.objects.filter(id__lt=current_id).count()
     bar = '█' * solved + '-' * (total - solved)
     return {'solved': solved, 'total': total, 'bar': bar}
+
+# Admin terminal entry point
+def admin_terminal(request):
+    if not request.session.get('is_admin'):
+        if request.method == 'POST' and request.POST.get('admin_code') == 'admin123':
+            request.session['is_admin'] = True
+            return redirect('admin_terminal')
+        else:
+            return render(request, 'escape/admin_login.html')
+
+    output = ""
+    if request.method == 'POST' and 'command' in request.POST:
+        cmd = request.POST['command'].strip().lower()
+
+        if cmd.startswith('add_room'):
+            return redirect('admin_add_room')
+
+        elif cmd == 'list_rooms':
+            output = "\n".join([f"{r.id}. {r.title}" for r in Room.objects.all()])
+
+        elif cmd.startswith('delete_room'):
+            try:
+                pk = int(cmd.split()[-1])
+                Room.objects.filter(pk=pk).delete()
+                output = f"Room {pk} deleted."
+            except:
+                output = "Invalid room ID."
+
+        elif cmd == 'upload_rooms':
+            return redirect('admin_upload_rooms')
+
+        elif cmd == 'logout':
+            request.session['is_admin'] = False
+            return redirect('home')
+
+        else:
+            output = "Unknown command. Try: list_rooms, add_room, delete_room <id>, upload_rooms, logout"
+
+    return render(request, 'escape/admin_terminal.html', {'output': output})
+
+# Add-room form view
+def admin_add_room(request):
+    if not request.session.get('is_admin'):
+        return redirect('admin_terminal')
+
+    if request.method == 'POST':
+        Room.objects.create(
+            title=request.POST['title'],
+            description=request.POST['description'],
+            puzzle_question=request.POST['question'],
+            puzzle_answer=request.POST['answer'],
+            hint=request.POST['hint']
+        )
+        return redirect('admin_terminal')
+
+    return render(request, 'escape/admin_add_room.html')
+
+# Upload JSON view
+def admin_upload_rooms(request):
+    if not request.session.get('is_admin'):
+        return redirect('admin_terminal')
+
+    if request.method == 'POST':
+        raw_json = request.POST.get('room_data', '')
+        try:
+            data = json.loads(raw_json)
+            new_rooms = [
+                Room(
+                    title=item['title'],
+                    description=item['description'],
+                    puzzle_question=item['puzzle_question'],
+                    puzzle_answer=item['puzzle_answer'],
+                    hint=item.get('hint', '')
+                ) for item in data
+            ]
+            Room.objects.bulk_create(new_rooms)
+            messages.success(request, f"Uploaded {len(new_rooms)} rooms successfully.")
+            return redirect('admin_terminal')
+        except Exception as e:
+            messages.error(request, f"Upload failed: {e}")
+
+    return render(request, 'escape/admin_upload_rooms.html')
+
+
