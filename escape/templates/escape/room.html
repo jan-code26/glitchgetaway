@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Glitch Getaway - Terminal</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="terminal">
+
+<button id="theme-switcher"
+        style="position: fixed; top: 10px; right: 10px; padding: 5px 10px; cursor: pointer;">
+    Switch Theme
+</button>
+
+<div class="terminal-screen">
+    <div class="terminal-header">
+        <p>GlitchGetaway v1.0</p>
+    </div>
+    <div class="terminal-body">
+        <pre class="flicker">[[ PROGRESS ]] {{ progress.bar }} {{ progress.solved }}/{{ progress.total }}</pre>
+
+        <pre class="flicker">[[ SYSTEM MESSAGE ]]</pre>
+        <pre>{{ room.description }}</pre>
+        <pre class="flicker">[[ HINT ]] Press ↑ / ↓ to recall previous commands like a real terminal.</pre>
+        <pre class="flicker">[[ COMMANDS ]] Type <code>hint</code>, <code>help</code>, or <code>clear</code> like a real terminal.</pre>
+
+        <pre class="flicker">[[ PUZZLE ]]</pre>
+        <pre>{{ room.puzzle_question }}</pre>
+        {% if error %}
+            <pre class="flicker error">{{ error }}</pre>
+        {% endif %}
+
+        <pre>>> <input id="terminal-input" class="terminal-input blink-cursor"
+                       autocomplete="off" autocorrect="off" spellcheck="false" /></pre>
+
+        <form id="hidden-form" method="POST" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="answer" id="hidden-answer">
+        </form>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const body = document.querySelector('body');
+        let theme = localStorage.getItem('theme');
+
+        // Theme Setup
+        if (!theme) {
+            const currentHour = new Date().getHours();
+            theme = (currentHour >= 7 && currentHour <= 19) ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+        }
+
+        applyTheme(theme);
+
+        const switcher = document.getElementById('theme-switcher');
+        let darkMode = (theme === 'dark');
+
+        switcher.addEventListener('click', () => {
+            darkMode = !darkMode;
+            theme = darkMode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        });
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.style.setProperty('--background-color', 'white');
+                body.style.setProperty('--text-color', 'black');
+                body.style.setProperty('--border-color', 'black');
+                body.style.setProperty('--header-text-color', 'white');
+            } else {
+                body.style.setProperty('--background-color', 'black');
+                body.style.setProperty('--text-color', '#00FF00');
+                body.style.setProperty('--border-color', '#00FF00');
+                body.style.setProperty('--header-text-color', 'black');
+            }
+        }
+
+        // Terminal Input Logic
+        let currentInput = '';
+        let commandHistory = JSON.parse(sessionStorage.getItem('history') || '[]');
+        let historyIndex = commandHistory.length;
+
+        const terminalInput = document.getElementById('terminal-input');
+        const hiddenForm = document.getElementById('hidden-form');
+        const hiddenAnswer = document.getElementById('hidden-answer');
+
+        // Focus input always on load
+        terminalInput.focus();
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = commandHistory[historyIndex];
+                }
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    terminalInput.value = '';
+                }
+            }
+
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                currentInput = terminalInput.value;
+                if (currentInput.trim() !== '') {
+                    commandHistory.push(currentInput);
+                    sessionStorage.setItem('history', JSON.stringify(commandHistory));
+                    historyIndex = commandHistory.length;
+                }
+
+                hiddenAnswer.value = currentInput;
+                hiddenForm.submit();
+                terminalInput.value = '';
+                currentInput = '';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

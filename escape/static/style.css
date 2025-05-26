@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+body.terminal {
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Share Tech Mono', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.terminal-screen {
+    width: 95%;
+    max-width: 800px;
+    border: 2px solid var(--border-color);
+    padding: 10px;
+    background-color: var(--background-color);
+    box-shadow: 0 0 10px var(--border-color), 0 0 20px var(--border-color);
+    overflow-y: auto;
+    height: auto;
+    min-height: 90vh;
+    box-sizing: border-box;
+}
+
+.terminal-header {
+    background-color: var(--border-color);
+    color: var(--header-text-color);
+    padding: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+
+.terminal-body {
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+pre {
+    margin: 0 0 10px 0;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    width: 90%;
+}
+
+.terminal-button {
+    margin-top: 5px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.terminal-button:hover {
+    background-color: var(--border-color);
+    color: var(--background-color);
+}
+
+/* Blinking cursor */
+.blink-cursor {
+    font-weight: bold;
+    animation: blink-caret 1s step-start infinite;
+}
+
+@keyframes blink-caret {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+#terminal-history {
+    overflow-y: auto;
+    max-height: 70vh;
+    margin-bottom: 10px;
+}
+
+pre.flicker.error {
+    color: red;
+}
+
+.blink-success {
+    display: inline-block;
+    animation: blink-fast 1s step-start infinite;
+    font-weight: bold;
+    font-size: 18px;
+    color: #00FF00;
+    text-align: center;
+    text-shadow: 0 0 5px #00FF00;
+}
+
+@keyframes blink-fast {
+    0%, 50% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+}
+
+
+@media screen and (max-width: 768px) {
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    body.terminal {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .terminal-screen {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 8px;
+        margin: 0;
+        box-shadow: none;
+        border: 1px solid var(--border-color);
+        min-height: auto;
+        height: auto;
+    }
+
+    .terminal-body {
+        padding: 6px;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .terminal-header {
+        padding: 6px;
+        font-size: 14px;
+    }
+
+    pre {
+        font-size: 15px;
+        word-break: break-word;
+        white-space: pre-wrap;
+    }
+
+    .blink-cursor {
+        display: inline-block;
+        animation: blink-caret 1s step-start infinite;
+        font: 18px 'Share Tech Mono', monospace;
+    }
+
+    @keyframes blink-caret {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    #theme-switcher {
+        font-size: 13px;
+        padding: 4px 10px;
+        top: 8px;
+        right: 8px;
+    }
+}
+
+.flicker {
+    animation: flicker-animation 1.5s infinite;
+}
+
+@keyframes flicker-animation {
+    0%   { opacity: 1; }
+    5%   { opacity: 0.4; }
+    10%  { opacity: 0.8; }
+    15%  { opacity: 0.5; }
+    20%  { opacity: 1; }
+    25%  { opacity: 0.3; }
+    30%  { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+
