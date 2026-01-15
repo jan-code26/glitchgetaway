@@ -1,0 +1,415 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700&display=swap');
+
+:root {
+    --background-color: #0a0a0a;
+    --text-color: #00FF00;
+    --border-color: #00FF00;
+    --header-text-color: #0a0a0a;
+    --card-bg: #1a1a1a;
+    --hover-glow: rgba(0, 255, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+body.light-theme {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --border-color: #000000;
+    --header-text-color: #ffffff;
+    --card-bg: #f5f5f5;
+    --hover-glow: rgba(0, 0, 0, 0.1);
+}
+
+/* Demo Badge */
+.demo-badge {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--border-color);
+    color: var(--background-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 0 20px var(--border-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Theme Switcher */
+.theme-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--background-color);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 0 20px var(--border-color);
+    transition: transform 0.3s ease;
+}
+
+.theme-button:hover {
+    transform: rotate(180deg) scale(1.1);
+}
+
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    padding: 120px 20px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.glitch-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px var(--border-color);
+    animation: flicker 3s infinite;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    41.99% { opacity: 1; }
+    42% { opacity: 0.8; }
+    43% { opacity: 1; }
+    45.99% { opacity: 1; }
+    46% { opacity: 0.6; }
+    46.5% { opacity: 1; }
+}
+
+.tagline {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.description {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Section Titles */
+.section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 40px;
+    text-shadow: 0 0 10px var(--border-color);
+}
+
+/* Demo Section */
+.demo-section {
+    padding: 60px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.demo-instructions {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+/* Terminal Styles (from original) */
+.terminal-screen {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 2px solid var(--border-color);
+    padding: 10px;
+    background-color: var(--background-color);
+    box-shadow: 0 0 10px var(--border-color), 0 0 20px var(--border-color);
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.terminal-header {
+    background-color: var(--border-color);
+    color: var(--header-text-color);
+    padding: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    margin: -10px -10px 10px -10px;
+}
+
+.terminal-body {
+    padding: 20px;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+pre {
+    margin: 0 0 10px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    width: 90%;
+}
+
+.terminal-input::placeholder {
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+.blink-cursor {
+    animation: blink-caret 1s step-start infinite;
+}
+
+@keyframes blink-caret {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.flicker {
+    animation: flicker-animation 1.5s infinite;
+}
+
+@keyframes flicker-animation {
+    0%   { opacity: 1; }
+    5%   { opacity: 0.4; }
+    10%  { opacity: 0.8; }
+    15%  { opacity: 0.5; }
+    20%  { opacity: 1; }
+    25%  { opacity: 0.3; }
+    30%  { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.error {
+    color: #ff0000;
+    font-weight: bold;
+}
+
+.success {
+    color: #00ff00;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00ff00;
+    animation: blink-fast 1s step-start 3;
+}
+
+@keyframes blink-fast {
+    0%, 50% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+}
+
+/* Features Section */
+.features-section {
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.feature-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 30px var(--hover-glow);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    opacity: 0.8;
+}
+
+/* GIF Section */
+.gif-section {
+    padding: 60px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.gif-container {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 30px var(--hover-glow);
+}
+
+.demo-gif {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.gif-placeholder {
+    padding: 100px 20px;
+    text-align: center;
+    font-size: 1.5rem;
+    background: var(--card-bg);
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 80px 20px;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 20px 50px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    background: var(--border-color);
+    color: var(--background-color);
+    text-decoration: none;
+    border-radius: 50px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 30px var(--border-color);
+    margin: 20px 0;
+}
+
+.cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px var(--border-color);
+}
+
+.installation-note {
+    margin-top: 30px;
+    opacity: 0.7;
+}
+
+/* Footer */
+.footer {
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    opacity: 0.7;
+}
+
+.footer a {
+    color: var(--text-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-color);
+    transition: opacity 0.3s ease;
+}
+
+.footer a:hover {
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .glitch-title {
+        font-size: 2.5rem;
+    }
+
+    .tagline {
+        font-size: 1.2rem;
+    }
+
+    .demo-badge {
+        top: 10px;
+        left: 10px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .theme-button {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .hero-section {
+        padding: 80px 20px 40px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .terminal-screen {
+        border-width: 1px;
+    }
+
+    .terminal-body {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .terminal-input {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .glitch-title {
+        font-size: 2rem;
+    }
+
+    .cta-button {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+    }
+}
