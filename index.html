@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GlitchGetaway - Interactive Coding Escape Room</title>
+    <link rel="stylesheet" href="demo-style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <!-- Demo Badge -->
+    <div class="demo-badge">
+        <span>LIVE DEMO</span>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="glitch-title">GlitchGetaway</h1>
+        <p class="tagline">Learn coding by escaping the glitch</p>
+        <p class="description">
+            An educational puzzle escape room where you solve coding and logic puzzles to move from one glitched room to another.
+            Master HTML, CSS, JavaScript, Python, and more while having fun.
+        </p>
+    </div>
+
+    <!-- Demo Puzzle Section -->
+    <div class="demo-section">
+        <h2 class="section-title">Try the Demo - No Installation Required</h2>
+        <p class="demo-instructions">Solve this puzzle to see how the game works</p>
+        
+        <div class="terminal-screen">
+            <div class="terminal-header">
+                <p>GlitchGetaway v1.0 - Demo Terminal</p>
+            </div>
+            <div class="terminal-body">
+                <pre class="flicker">[[ PROGRESS ]] [#----] 1/5 Rooms</pre>
+                
+                <pre class="flicker">[[ SYSTEM MESSAGE ]]</pre>
+                <pre id="room-description">Welcome to your first glitch! You need to fix broken HTML.</pre>
+                
+                <pre class="flicker">[[ HINT ]] Type 'hint' for a clue, 'help' for commands, or 'clear' to reset.</pre>
+                
+                <pre class="flicker">[[ PUZZLE ]]</pre>
+                <pre id="room-question">What is the correct closing tag for an HTML paragraph?</pre>
+                
+                <pre id="error-message" class="error" style="display: none;"></pre>
+                <pre id="success-message" class="success" style="display: none;"></pre>
+                
+                <pre>>> <input id="terminal-input" class="terminal-input blink-cursor" 
+                               autocomplete="off" autocorrect="off" spellcheck="false" 
+                               placeholder="Type your answer here..." /></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+        <h2 class="section-title">Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">Code</div>
+                <h3>Multiple Languages</h3>
+                <p>Learn HTML, CSS, JavaScript, Python, and more</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Puzzle</div>
+                <h3>Interactive Puzzles</h3>
+                <p>Solve real coding challenges in a fun format</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Theme</div>
+                <h3>Dark/Light Themes</h3>
+                <p>Switch between themes for comfortable coding</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Mobile</div>
+                <h3>Mobile Friendly</h3>
+                <p>Play anywhere, on any device</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- GIF Demo Section -->
+    <div class="gif-section">
+        <h2 class="section-title">See It In Action</h2>
+        <div class="gif-container">
+            <!-- Note: demo.gif needs to be created separately. See DEMO_GIF_INSTRUCTIONS.md -->
+            <img src="demo.gif" alt="Animated demonstration of solving a coding puzzle in GlitchGetaway terminal interface" class="demo-gif" id="demo-gif-image">
+            <div class="gif-placeholder" id="gif-placeholder" style="display: none;">
+                <p>Gameplay demo coming soon</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <h2 class="section-title">Ready to Escape the Glitch?</h2>
+        <a href="https://github.com/jan-code26/glitchgetaway" class="cta-button" target="_blank">
+            Play Full Game on GitHub
+        </a>
+        <div class="installation-note">
+            <p>Clone the repo and run locally with Django, or contribute to the project</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Made by <a href="https://github.com/jan-code26" target="_blank">jan-code26</a></p>
+        <p>
+            <a href="https://github.com/jan-code26/glitchgetaway" target="_blank">GitHub</a> | 
+            <a href="https://github.com/jan-code26/glitchgetaway/issues" target="_blank">Report Issues</a>
+        </p>
+    </footer>
+
+    <!-- Theme Switcher -->
+    <button id="theme-switcher" class="theme-button" aria-label="Toggle theme">
+        Switch Theme
+    </button>
+
+    <script src="demo-script.js"></script>
+</body>
+</html>
