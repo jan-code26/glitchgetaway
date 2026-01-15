@@ -8,6 +8,15 @@ const demoPuzzle = {
     description: "Welcome to your first glitch! You need to fix broken HTML."
 };
 
+// Theme configuration
+const LIGHT_THEME_START_HOUR = 7;
+const LIGHT_THEME_END_HOUR = 19;
+
+// Confetti configuration
+const CONFETTI_PARTICLE_COUNT = 50;
+const LIGHT_THEME_CONFETTI_COLORS = ['#000000', '#333333', '#666666', '#4a90e2', '#e74c3c'];
+const DARK_THEME_CONFETTI_COLORS = ['#00FF00', '#00FFFF', '#FFFF00', '#FF00FF', '#00FF7F'];
+
 // Command history
 let commandHistory = [];
 let historyIndex = 0;
@@ -40,7 +49,7 @@ function initializeTheme() {
     
     if (!theme) {
         const currentHour = new Date().getHours();
-        theme = (currentHour >= 7 && currentHour <= 19) ? 'light' : 'dark';
+        theme = (currentHour >= LIGHT_THEME_START_HOUR && currentHour <= LIGHT_THEME_END_HOUR) ? 'light' : 'dark';
         localStorage.setItem('glitchgetaway-theme', theme);
     }
     
@@ -179,11 +188,8 @@ function createConfetti() {
     const body = document.querySelector('body');
     const isLightTheme = body.classList.contains('light-theme');
     
-    const colors = isLightTheme 
-        ? ['#000000', '#333333', '#666666', '#4a90e2', '#e74c3c']
-        : ['#00FF00', '#00FFFF', '#FFFF00', '#FF00FF', '#00FF7F'];
-    
-    const confettiCount = 50;
+    const colors = isLightTheme ? LIGHT_THEME_CONFETTI_COLORS : DARK_THEME_CONFETTI_COLORS;
+    const confettiCount = CONFETTI_PARTICLE_COUNT;
     
     for (let i = 0; i < confettiCount; i++) {
         setTimeout(() => {
@@ -226,6 +232,7 @@ function createConfetti() {
 }
 
 // Easter egg: Konami code
+// The classic video game cheat code: ↑ ↑ ↓ ↓ ← → ← → B A
 let konamiCode = [];
 const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
