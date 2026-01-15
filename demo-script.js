@@ -62,10 +62,10 @@ function applyTheme(theme) {
     
     if (theme === 'light') {
         body.classList.add('light-theme');
-        if (themeButton) themeButton.textContent = '🌙';
+        if (themeButton) themeButton.textContent = 'Dark Mode';
     } else {
         body.classList.remove('light-theme');
-        if (themeButton) themeButton.textContent = '☀️';
+        if (themeButton) themeButton.textContent = 'Light Mode';
     }
 }
 
@@ -159,7 +159,7 @@ function handleCommand(command) {
     
     // Check answer
     if (command === demoPuzzle.answer.toLowerCase()) {
-        showSuccess('🎉 Correct! You escaped the first glitch!\n\n[[ SYSTEM ]] This is just a taste of GlitchGetaway.\nPlay the full game to solve more puzzles!');
+        showSuccess('Correct! You escaped the first glitch!\n\n[[ SYSTEM ]] This is just a taste of GlitchGetaway.\nPlay the full game to solve more puzzles!');
         
         // Add confetti effect
         setTimeout(() => {
@@ -241,7 +241,7 @@ document.addEventListener('keydown', (e) => {
     konamiCode = konamiCode.slice(-konamiSequence.length);
     
     if (konamiCode.join(',') === konamiSequence.join(',')) {
-        showSuccess('🎮 KONAMI CODE ACTIVATED! You found the easter egg!\n\nYou\'re a true gamer! ⭐');
+        showSuccess('KONAMI CODE ACTIVATED! You found the easter egg!\n\nYou are a true gamer!');
         createConfetti();
         konamiCode = [];
     }

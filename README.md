@@ -1,30 +1,30 @@
-# 🎮 GlitchGetaway
+# GlitchGetaway
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge&logo=github)](https://jan-code26.github.io/glitchgetaway/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=for-the-badge&logo=github)](https://jan-code26.github.io/glitchgetaway/)
 [![Python](https://img.shields.io/badge/python-3.8+-blue?style=for-the-badge&logo=python)](https://www.python.org)
 [![Django](https://img.shields.io/badge/django-5.2-green?style=for-the-badge&logo=django)](https://www.djangoproject.com)
 
-An educational puzzle escape room where users solve coding/logic puzzles to move from one "glitched room" to another. **Learn coding while playing!** 🚀
+An educational puzzle escape room where users solve coding and logic puzzles to move from one glitched room to another. Learn coding while playing.
 
-## 🌟 Try the Interactive Demo!
+## Try the Interactive Demo
 
-**[🎯 Play Demo Now - No Installation Required!](https://jan-code26.github.io/glitchgetaway/)**
+**[Play Demo Now - No Installation Required](https://jan-code26.github.io/glitchgetaway/)**
 
-Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and see how the game works!
+Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and see how the game works.
 
 ![GlitchGetaway Demo](demo.gif)
 
-## ✨ Features
+## Features
 
-- 💻 **Multiple Programming Languages**: Learn HTML, CSS, JavaScript, Python, and more
-- 🎯 **Interactive Puzzles**: Solve real coding challenges in a fun, engaging format
-- 🌙 **Dark/Light Themes**: Comfortable coding experience with theme switching
-- 📱 **Mobile Friendly**: Play anywhere, on any device
-- 🖥️ **Terminal-Style Interface**: Authentic developer experience with command history
-- 🔐 **Admin Panel**: Add, edit, and manage puzzle rooms
+- **Multiple Programming Languages**: Learn HTML, CSS, JavaScript, Python, and more
+- **Interactive Puzzles**: Solve real coding challenges in a fun, engaging format
+- **Dark/Light Themes**: Comfortable coding experience with theme switching
+- **Mobile Friendly**: Play anywhere, on any device
+- **Terminal-Style Interface**: Authentic developer experience with command history
+- **Admin Panel**: Add, edit, and manage puzzle rooms
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Play the Full Game Locally
 
@@ -55,9 +55,9 @@ Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and se
    ```
 
 6. **Open your browser**
-   Navigate to `http://localhost:8000` and start playing!
+   Navigate to `http://localhost:8000` and start playing
 
-## 🎮 How to Play
+## How to Play
 
 1. Read the puzzle question carefully
 2. Type your answer in the terminal input
@@ -66,9 +66,9 @@ Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and se
    - `hint` - Get a hint after 3 attempts
    - `help` - Show available commands
    - `clear` - Clear the terminal screen
-5. Solve all rooms to escape the glitch!
+5. Solve all rooms to escape the glitch
 
-## 🛠️ Admin Features
+## Admin Features
 
 Access the admin terminal with:
 ```
@@ -82,30 +82,30 @@ Available admin commands:
 - `upload_rooms` - Bulk upload rooms via JSON
 - `logout` - Exit admin mode
 
-## 📝 Technologies Used
+## Technologies Used
 
 - **Backend**: Django 5.2, Python
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Styling**: Custom terminal-themed CSS with animations
 - **Deployment**: GitHub Pages (demo), Gunicorn + WhiteNoise (full app)
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Feel free to:
+Contributions are welcome. Feel free to:
 - Add new puzzle rooms
 - Improve the UI/UX
 - Add new features
 - Fix bugs
 - Improve documentation
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## 👨‍💻 Author
+## Author
 
-Created with ❤️ by [jan-code26](https://github.com/jan-code26)
+Created by [jan-code26](https://github.com/jan-code26)
 
 ---
 
-**[⭐ Star this repo](https://github.com/jan-code26/glitchgetaway)** if you find it useful!
+**[Star this repo](https://github.com/jan-code26/glitchgetaway)** if you find it useful.
