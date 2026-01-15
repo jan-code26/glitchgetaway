@@ -161,7 +161,7 @@ function showSuccess(message) {
 
 // Confetti Effect
 function createConfetti() {
-    const colors = ['#00FF00', '#00FF00', '#00FF00', '#FFFF00', '#FF00FF'];
+    const colors = ['#00FF00', '#00FFFF', '#FFFF00', '#FF00FF', '#00FF7F'];
     const confettiCount = 50;
     
     for (let i = 0; i < confettiCount; i++) {

@@ -213,14 +213,23 @@ pre {
 }
 
 .error {
-    color: #ff0000;
+    color: var(--text-color);
     font-weight: bold;
+    opacity: 0.9;
+}
+
+body.light-theme .error {
+    color: #cc0000;
+}
+
+body:not(.light-theme) .error {
+    color: #ff4444;
 }
 
 .success {
-    color: #00ff00;
+    color: var(--border-color);
     font-weight: bold;
-    text-shadow: 0 0 10px #00ff00;
+    text-shadow: 0 0 10px var(--border-color);
     animation: blink-fast 1s step-start 3;
 }
 
