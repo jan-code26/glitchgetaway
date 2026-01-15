@@ -17,7 +17,21 @@ window.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
     initializeTerminal();
     initializeThemeSwitcher();
+    handleMissingGif();
 });
+
+// Handle missing demo.gif gracefully
+function handleMissingGif() {
+    const gifImage = document.getElementById('demo-gif-image');
+    const placeholder = document.getElementById('gif-placeholder');
+    
+    if (gifImage && placeholder) {
+        gifImage.addEventListener('error', () => {
+            gifImage.style.display = 'none';
+            placeholder.style.display = 'block';
+        });
+    }
+}
 
 // Theme Management
 function initializeTheme() {
@@ -161,7 +175,14 @@ function showSuccess(message) {
 
 // Confetti Effect
 function createConfetti() {
-    const colors = ['#00FF00', '#00FFFF', '#FFFF00', '#FF00FF', '#00FF7F'];
+    // Use theme-aware colors for confetti
+    const body = document.querySelector('body');
+    const isLightTheme = body.classList.contains('light-theme');
+    
+    const colors = isLightTheme 
+        ? ['#000000', '#333333', '#666666', '#4a90e2', '#e74c3c']
+        : ['#00FF00', '#00FFFF', '#FFFF00', '#FF00FF', '#00FF7F'];
+    
     const confettiCount = 50;
     
     for (let i = 0; i < confettiCount; i++) {

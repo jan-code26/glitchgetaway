@@ -213,17 +213,12 @@ pre {
 }
 
 .error {
-    color: var(--text-color);
+    color: #ff4444;
     font-weight: bold;
-    opacity: 0.9;
 }
 
 body.light-theme .error {
     color: #cc0000;
-}
-
-body:not(.light-theme) .error {
-    color: #ff4444;
 }
 
 .success {
