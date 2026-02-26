@@ -193,6 +193,7 @@
     .fade { opacity: 1; transform: none; }
 
     .photo-frame { aspect-ratio: 3/4; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .photo-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
     .photo-placeholder svg { width: 48px; height: 48px; stroke: var(--muted); }
 
@@ -226,7 +227,7 @@
       <li><a href="#skills">Skills</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <a href="/static/Jahnavi_Patel_Resume.pdf" download class="nav-resume">Resume ↓</a>
+    <a href="{% static 'images/Jahnavi_Patel_Resume.pdf' %}" download class="nav-resume">Resume ↓</a>
     <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
@@ -240,7 +241,7 @@
   <a href="#projects" class="drawer-link">Projects</a>
   <a href="#skills" class="drawer-link">Skills</a>
   <a href="#contact" class="drawer-link">Contact</a>
-  <a href="/static/Jahnavi_Patel_Resume.pdf" download class="drawer-resume">Resume ↓</a>
+  <a href="{% static 'images/Jahnavi_Patel_Resume.pdf' %}" download class="drawer-resume">Resume ↓</a>
 </div>
 
 <!-- HERO -->
@@ -269,12 +270,7 @@
 
       <div class="hero-photo fade" style="transition-delay:.3s">
         <div class="photo-frame">
-          <div class="photo-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-            </svg>
-            Replace with your photo
-          </div>
+          <img src="{% static 'images/profile-photo.png' %}" alt="Jahnavi Patel" />
         </div>
       </div>
     </div>
