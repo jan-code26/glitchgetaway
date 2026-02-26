@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,6 +98,7 @@
 
     h1 { font-family: var(--serif); font-size: clamp(3rem, 6.5vw, 5rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.01em; }
     h1 .dim { color: var(--muted); font-style: italic; }
+    h2 { font-family: var(--serif); font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 2rem; }
 
     .hero-bio { font-size: 1rem; color: var(--subtle); max-width: 480px; line-height: 1.75; font-weight: 300; }
     .hero-bio strong { color: var(--text); font-weight: 400; }
@@ -112,91 +114,77 @@
     .btn-primary { background: var(--accent); color: #0a0a0b; font-weight: 500; }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
     .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border2); }
-    .btn-ghost:hover { color: var(--text); border-color: var(--subtle); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 
-    .hero-photo { width: 160px; flex-shrink: 0; }
-    .photo-frame { width: 160px; height: 200px; border-radius: 4px; border: 1px solid var(--border2); overflow: hidden; background: var(--surface); }
-    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(20%); }
-    .photo-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted); font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em; text-align: center; padding: 1rem; line-height: 1.4; }
-    .photo-placeholder svg { width: 36px; height: 36px; opacity: 0.25; }
+    .sec-label { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .sec-sub { color: var(--subtle); margin-bottom: 2rem; max-width: 700px; }
 
-    .sec-label { font-family: var(--mono); font-size: 0.68rem; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.6rem; }
-    h2 { font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 400; line-height: 1.1; margin-bottom: 0.8rem; }
-    .sec-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 3rem; font-weight: 300; max-width: 480px; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .about-text p { margin-bottom: 1.2rem; }
+    .about-text a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); transition: all 0.15s; }
+    .about-text a:hover { color: var(--accent2); border-color: var(--accent2); }
 
-    /* ABOUT */
-    .about-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 4rem; align-items: start; }
-    .about-text p { font-size: 0.95rem; color: var(--subtle); line-height: 1.8; font-weight: 300; margin-bottom: 1rem; }
-    .about-text p:last-child { margin-bottom: 0; }
-    .about-text strong { color: var(--text); font-weight: 400; }
-    .about-text a { color: var(--accent); text-decoration: none; }
-    .about-facts { display: flex; flex-direction: column; gap: 1rem; }
-    .fact { padding: 1.1rem 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; }
-    .fact-label { font-family: var(--mono); font-size: 0.6rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
-    .fact-value { font-size: 0.88rem; color: var(--text); font-weight: 400; }
-    .fact-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.12rem; }
+    .about-facts { display: flex; flex-direction: column; gap: 2rem; }
+    .fact { display: flex; flex-direction: column; gap: 0.4rem; }
+    .fact-label { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .fact-value { font-size: 1.1rem; font-weight: 400; color: var(--text); }
+    .fact-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
 
-    /* EXPERIENCE */
-    .exp-list { display: flex; flex-direction: column; }
-    .exp-item { display: grid; grid-template-columns: 190px 1fr; gap: 3rem; padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
-    .exp-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .exp-company { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; line-height: 1.2; margin-bottom: 0.4rem; }
-    .exp-period { font-family: var(--mono); font-size: 0.66rem; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 0.6rem; }
-    .exp-badge { display: inline-block; font-family: var(--mono); font-size: 0.58rem; color: var(--accent); border: 1px solid rgba(126,232,162,0.25); border-radius: 2px; padding: 0.1rem 0.4rem; letter-spacing: 0.06em; text-transform: uppercase; }
-    .exp-role { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.2rem; }
-    .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.2rem; }
-    .exp-bullets li { font-size: 0.87rem; color: var(--subtle); padding-left: 1.3rem; position: relative; line-height: 1.65; font-weight: 300; }
-    .exp-bullets li::before { content: '↳'; position: absolute; left: 0; color: var(--accent); font-size: 0.72rem; top: 0.12rem; }
-    .exp-bullets li strong { color: var(--text); font-weight: 400; }
-    .tech-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .exp-list { display: flex; flex-direction: column; gap: 3.5rem; }
+    .exp-item { display: grid; grid-template-columns: 180px 1fr; gap: 2rem; }
+    .exp-meta { display: flex; flex-direction: column; gap: 0.6rem; }
+    .exp-company { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+    .exp-period { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+    .exp-badge { display: inline-flex; font-family: var(--mono); font-size: 0.6rem; color: var(--accent); border: 1px solid rgba(126,232,162,0.25); border-radius: 100px; padding: 0.25rem 0.6rem; width: fit-content; }
+    .exp-role { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: 0.8rem; }
+    .exp-bullets { list-style: none; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .exp-bullets li { font-size: 0.95rem; color: var(--subtle); line-height: 1.6; }
+    .exp-bullets strong { color: var(--text); font-weight: 500; }
+    .tech-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
 
-    /* PROJECTS */
-    .project-anchor { background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; overflow: hidden; margin-bottom: 1.5rem; transition: border-color 0.2s; }
-    .project-anchor:hover { border-color: rgba(126,232,162,0.3); }
-    .anchor-top { padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; border-bottom: 1px solid var(--border); }
-    .anchor-left { display: flex; flex-direction: column; gap: 1rem; }
-    .project-kicker { font-family: var(--mono); font-size: 0.63rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; }
-    .project-name { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; line-height: 1.1; }
-    .project-desc { font-size: 0.87rem; color: var(--subtle); line-height: 1.7; font-weight: 300; }
-    .project-links { display: flex; gap: 1rem; margin-top: auto; padding-top: 0.3rem; }
-    .plink { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.3rem; transition: color 0.15s; }
-    .plink:hover { color: var(--accent); }
-    .anchor-right { display: flex; flex-direction: column; gap: 0.9rem; }
-    .case-block { background: rgba(126,232,162,0.04); border: 1px solid rgba(126,232,162,0.1); border-radius: 4px; padding: 1rem 1.1rem; }
-    .case-label { font-family: var(--mono); font-size: 0.6rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.45rem; }
-    .case-text { font-size: 0.82rem; color: var(--subtle); line-height: 1.6; font-weight: 300; }
-    .case-text strong { color: var(--text); font-weight: 400; }
-    .anchor-bottom { padding: 1.1rem 2.5rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .project-anchor { display: flex; flex-direction: column; gap: 2rem; margin-bottom: 3rem; }
+    .anchor-top { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .anchor-left { display: flex; flex-direction: column; gap: 1.5rem; }
+    .project-kicker { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .project-name { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; color: var(--accent); line-height: 1.1; }
+    .project-desc { color: var(--subtle); line-height: 1.75; font-size: 0.95rem; }
+    .project-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .plink { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); text-decoration: none; letter-spacing: 0.05em; border-bottom: 1px solid var(--accent); transition: all 0.15s; }
+    .plink:hover { color: var(--accent2); border-color: var(--accent2); }
 
-    .project-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-    .project-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.8rem; display: flex; flex-direction: column; gap: 0.9rem; transition: border-color 0.2s, transform 0.15s; position: relative; overflow: hidden; }
-    .project-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.25s; }
-    .project-card:hover { border-color: rgba(126,232,162,0.2); transform: translateY(-2px); }
-    .project-card:hover::after { opacity: 1; }
-    .card-kicker { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
-    .card-name { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; }
-    .card-desc { font-size: 0.83rem; color: var(--subtle); line-height: 1.65; font-weight: 300; flex: 1; }
-    .card-impact { background: var(--accent-bg); border-left: 2px solid var(--accent); padding: 0.55rem 0.8rem; border-radius: 0 3px 3px 0; font-size: 0.77rem; color: var(--subtle); font-style: italic; }
+    .anchor-right { display: flex; flex-direction: column; gap: 1rem; }
+    .case-block { padding: 1.2rem; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; }
+    .case-label { font-family: var(--mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.6rem; }
+    .case-text { font-size: 0.9rem; color: var(--subtle); line-height: 1.6; }
 
-    /* SKILLS */
-    .skills-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-    .skill-group { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.2rem 1.3rem; }
-    .sg-name { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.85rem; }
-    .sg-items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-    .sg-item { font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 2px; padding: 0.2rem 0.5rem; }
-    .learning-row { margin-top: 1.5rem; padding: 1rem 1.3rem; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .learning-label { font-family: var(--mono); font-size: 0.63rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+    .anchor-bottom { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
-    /* CONTACT */
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
-    .contact-copy { display: flex; flex-direction: column; gap: 1.2rem; }
-    .contact-copy p { font-size: 0.93rem; color: var(--subtle); line-height: 1.8; font-weight: 300; }
-    .contact-copy strong { color: var(--text); font-weight: 400; }
-    .contact-links { display: flex; flex-direction: column; gap: 0.75rem; }
-    .clink { display: flex; align-items: center; justify-content: space-between; padding: 0.95rem 1.1rem; border: 1px solid var(--border2); border-radius: 4px; text-decoration: none; color: var(--text); transition: all 0.15s; }
-    .clink:hover { border-color: var(--accent); background: var(--accent-bg); }
-    .clink-name { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
-    .clink-val { font-size: 0.78rem; color: var(--muted); }
+    .project-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .project-card { padding: 2rem; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; display: flex; flex-direction: column; gap: 1rem; transition: all 0.2s; }
+    .project-card:hover { border-color: var(--accent); background: rgba(126,232,162,0.03); }
+    .card-kicker { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .card-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; color: var(--text); line-height: 1.1; }
+    .card-desc { color: var(--subtle); font-size: 0.95rem; line-height: 1.7; }
+    .card-impact { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); border-left: 2px solid var(--accent); padding-left: 1rem; }
+
+    .skills-wrap { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; }
+    .skill-group { display: flex; flex-direction: column; gap: 1rem; }
+    .sg-name { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+    .sg-items { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .sg-item { font-family: var(--mono); font-size: 0.8rem; color: var(--text); background: var(--surface); border: 1px solid var(--border2); padding: 0.4rem 0.8rem; border-radius: 3px; transition: all 0.15s; }
+    .sg-item:hover { border-color: var(--accent); color: var(--accent); }
+
+    .learning-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+    .learning-label { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .contact-copy p { margin-bottom: 1.2rem; color: var(--subtle); line-height: 1.75; }
+    .contact-copy strong { color: var(--text); }
+    .contact-links { display: flex; flex-direction: column; gap: 1.8rem; }
+    .clink { text-decoration: none; transition: all 0.15s; }
+    .clink:hover .clink-name { color: var(--accent); }
+    .clink-name { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; display: block; }
+    .clink-val { font-size: 1rem; color: var(--text); display: block; margin-top: 0.2rem; }
 
     footer { border-top: 1px solid var(--border); padding: 2rem 0; }
     footer .inner { display: flex; justify-content: space-between; align-items: center; }
@@ -204,14 +192,20 @@
 
     .fade { opacity: 1; transform: none; }
 
+    .photo-frame { aspect-ratio: 3/4; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .photo-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
+    .photo-placeholder svg { width: 48px; height: 48px; stroke: var(--muted); }
+
+    .hero-photo { display: flex; }
+
     @media (max-width: 680px) {
       .hero-grid { grid-template-columns: 1fr; }
       .hero-photo { display: none; }
       .about-grid { grid-template-columns: 1fr; }
-      .exp-item { grid-template-columns: 1fr; gap: 1rem; }
       .anchor-top { grid-template-columns: 1fr; }
+      .exp-item { grid-template-columns: 1fr; gap: 1rem; }
       .project-cards { grid-template-columns: 1fr; }
-      .skills-wrap { grid-template-columns: 1fr 1fr; }
+      .skills-wrap { grid-template-columns: 1fr; }
       .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .nav-links { display: none; }
       .nav-resume { display: none; }
@@ -232,7 +226,7 @@
       <li><a href="#skills">Skills</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <a href="Jahnavi_Patel_Resume.pdf" download class="nav-resume">Resume ↓</a>
+    <a href="/static/Jahnavi_Patel_Resume.pdf" download class="nav-resume">Resume ↓</a>
     <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
@@ -246,7 +240,7 @@
   <a href="#projects" class="drawer-link">Projects</a>
   <a href="#skills" class="drawer-link">Skills</a>
   <a href="#contact" class="drawer-link">Contact</a>
-  <a href="Jahnavi_Patel_Resume.pdf" download class="drawer-resume">Resume ↓</a>
+  <a href="/static/Jahnavi_Patel_Resume.pdf" download class="drawer-resume">Resume ↓</a>
 </div>
 
 <!-- HERO -->
@@ -268,14 +262,13 @@
           <span class="tag">Docker · CI/CD</span>
         </div>
         <div class="hero-actions fade" style="transition-delay:.24s">
-          <a href="/cdn-cgi/l/email-protection#91fbf0f9fff0e7f8bff0f5e2a3a7d1f6fcf0f8fdbff2fefc" class="btn btn-primary">Get in touch ↗</a>
-          <a href="#experience" class="btn btn-ghost">See my work ↓</a>
+          <a href="mailto:patel.jahnavi.jntu@gmail.com" class="btn btn-primary">Get in touch ↗</a>
+          <a href="/play/" class="btn btn-ghost">Try the game ↓</a>
         </div>
       </div>
 
       <div class="hero-photo fade" style="transition-delay:.3s">
         <div class="photo-frame">
-          <!-- Replace with: <img src="your-photo.jpg" alt="Jahnavi Patel" /> -->
           <div class="photo-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
               <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
@@ -397,8 +390,8 @@
           <div class="project-name">Glitch Getaway</div>
           <p class="project-desc">Hacker-themed educational puzzle web app with terminal-style games, real-time input simulation, and dynamic theming. Designed, built, and deployed end-to-end — from Django backend to custom domain with HTTPS. A live side project with real users.</p>
           <div class="project-links">
-            <a href="https://glitchgetaway.me" target="_blank" class="plink">↗ glitchgetaway.me</a>
-            <a href="https://github.com/jan-code26" target="_blank" class="plink">↗ GitHub</a>
+            <a href="/play/" class="plink">↗ Try it now</a>
+            <a href="https://github.com/jan-code26/glitchgetaway" target="_blank" class="plink">↗ GitHub</a>
           </div>
         </div>
         <div class="anchor-right">
@@ -408,18 +401,18 @@
           </div>
           <div class="case-block">
             <div class="case-label">// the build</div>
-            <p class="case-text"><strong>Django backend</strong> with a scalable JSON-based puzzle engine. <strong>JavaScript frontend</strong> with real-time terminal simulation. Deployed on Render with custom domain and HTTPS from day one.</p>
+            <p class="case-text"><strong>Django backend</strong> with a scalable JSON-based puzzle engine. <strong>JavaScript frontend</strong> with real-time terminal simulation. Deployed with custom domain and HTTPS.</p>
           </div>
           <div class="case-block">
             <div class="case-label">// the result</div>
-            <p class="case-text">Live and maintained at glitchgetaway.me. Shows I can own a full product lifecycle: design, code, deploy, operate.</p>
+            <p class="case-text">Live and maintained. Shows I can own a full product lifecycle: design, code, deploy, operate.</p>
           </div>
         </div>
       </div>
       <div class="anchor-bottom">
         <span class="tag">Python</span><span class="tag">Django</span>
         <span class="tag">JavaScript</span><span class="tag">HTML/CSS</span>
-        <span class="tag">Render</span><span class="tag">HTTPS · Custom domain</span>
+        <span class="tag">HTTPS · Custom domain</span>
       </div>
     </div>
 
@@ -522,11 +515,11 @@
       <div class="contact-copy fade">
         <p>Looking for <strong>software engineer roles starting May 2026</strong>. Full-stack, backend, or anything adjacent — especially at startups where you're expected to own things end-to-end.</p>
         <p>Not looking for freelance, internships, or anything not starting in spring 2026. But if you want to talk software, architecture, or how terrible group projects are — always up for that.</p>
-        <a href="/cdn-cgi/l/email-protection#107a71787e7166793e717463222650777d71797c3e737f7d" class="btn btn-primary" style="width:fit-content; margin-top:0.5rem;">Send an email ↗</a>
+        <a href="mailto:patel.jahnavi.jntu@gmail.com" class="btn btn-primary" style="width:fit-content; margin-top:0.5rem;">Send an email ↗</a>
       </div>
       <div class="contact-links fade" style="transition-delay:.1s">
-        <a href="/cdn-cgi/l/email-protection#4a202b22242b3c23642b2e39787c0a2d272b232664292527" class="clink">
-          <span class="clink-name">Email</span><span class="clink-val"><span class="__cf_email__" data-cfemail="93f9f2fbfdf2e5fabdf2f7e0a1a5d3f4fef2faffbdf0fcfe">[email&#160;protected]</span></span>
+        <a href="mailto:patel.jahnavi.jntu@gmail.com" class="clink">
+          <span class="clink-name">Email</span><span class="clink-val">patel.jahnavi.jntu@gmail.com</span>
         </a>
         <a href="https://linkedin.com/in/jahnavi-patel81" target="_blank" class="clink">
           <span class="clink-name">LinkedIn</span><span class="clink-val">jahnavi-patel81</span>
@@ -534,8 +527,8 @@
         <a href="https://github.com/jan-code26" target="_blank" class="clink">
           <span class="clink-name">GitHub</span><span class="clink-val">jan-code26</span>
         </a>
-        <a href="https://glitchgetaway.me" target="_blank" class="clink">
-          <span class="clink-name">Live project</span><span class="clink-val">glitchgetaway.me</span>
+        <a href="/play/" class="clink">
+          <span class="clink-name">Live project</span><span class="clink-val">Glitch Getaway</span>
         </a>
       </div>
     </div>
@@ -551,7 +544,6 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/clo
 <script>
   const fades = document.querySelectorAll('.fade');
 

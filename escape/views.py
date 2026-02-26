@@ -8,7 +8,12 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.contrib import messages
 
+def portfolio(request):
+    """Serve the portfolio landing page"""
+    return render(request, 'escape/portfolio.html')
+
 def home(request):
+    """Redirect to the game (kept for backwards compatibility)"""
     if 'current_room_id' not in request.session:
         first_room = Room.objects.first()
         if not first_room:
