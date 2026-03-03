@@ -1,16 +1,11 @@
 import os
 from django.core.wsgi import get_wsgi_application
-from whitenoise import WhiteNoise
-
-from glitchgetaway.settings import \
-    BASE_DIR
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'glitchgetaway.settings')
 
 application = get_wsgi_application()
-application = WhiteNoise(application)
 
-# 🔥 After Django is fully ready, then you can use models safely
+# Auto-run migrations and seed rooms on first deploy
 try:
     from django.core.management import call_command
     from escape.models import Room

@@ -1,13 +1,24 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
+
+from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
+import json
 
 from .models import Room
-from django.http import HttpResponse, JsonResponse
-import json
-from django.contrib import messages
+
+
+def get_progress(request):
+    current_id = request.session.get('current_room_id')
+    total = Room.objects.count()
+    solved = Room.objects.filter(id__lt=current_id).count()
+    bar = '█' * solved + '-' * (total - solved)
+    return {'solved': solved, 'total': total, 'bar': bar}
+
 
 def portfolio(request):
     """Serve the portfolio landing page"""
     return render(request, 'escape/portfolio.html')
+
 
 def home(request):
     """Redirect to the game (kept for backwards compatibility)"""
@@ -83,38 +94,17 @@ def room_view(request):
 
         return render(request, 'escape/room.html', {'room': room, 'error': error, 'progress': get_progress(request)})
 
-    total_rooms = Room.objects.count()
-    solved_rooms = request.session.get('solved_room_ids', [])
-    solved_count = len(solved_rooms)
-
-    # Build a simple bar: "#" for solved, "-" for remaining
-    progress_bar = "[" + "#" * solved_count + "-" * (total_rooms - solved_count) + "]"
-
-    progress = {
-        'solved': solved_count,
-        'total': total_rooms,
-        'bar': progress_bar
-    }
-
     return render(request, 'escape/room.html', {
         'room': room,
         'error': error,
-        'progress': progress
+        'progress': get_progress(request),
     })
-
 
 
 def success_view(request):
     request.session.flush()
     return render(request, 'escape/success.html')
 
-
-def get_progress(request):
-    current_id = request.session.get('current_room_id')
-    total = Room.objects.count()
-    solved = Room.objects.filter(id__lt=current_id).count()
-    bar = '█' * solved + '-' * (total - solved)
-    return {'solved': solved, 'total': total, 'bar': bar}
 
 # Admin terminal entry point
 def admin_terminal(request):
@@ -140,7 +130,7 @@ def admin_terminal(request):
                 pk = int(cmd.split()[-1])
                 Room.objects.filter(pk=pk).delete()
                 output = f"Room {pk} deleted."
-            except:
+            except Exception:
                 output = "Invalid room ID."
 
         elif cmd == 'upload_rooms':
@@ -154,6 +144,7 @@ def admin_terminal(request):
             output = "Unknown command. Try: list_rooms, add_room, delete_room <id>, upload_rooms, logout"
 
     return render(request, 'escape/admin_terminal.html', {'output': output})
+
 
 # Add-room form view
 def admin_add_room(request):
@@ -171,6 +162,7 @@ def admin_add_room(request):
         return redirect('admin_terminal')
 
     return render(request, 'escape/admin_add_room.html')
+
 
 # Upload JSON view
 def admin_upload_rooms(request):
@@ -197,5 +189,4 @@ def admin_upload_rooms(request):
             messages.error(request, f"Upload failed: {e}")
 
     return render(request, 'escape/admin_upload_rooms.html')
-
 

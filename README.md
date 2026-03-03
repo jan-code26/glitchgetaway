@@ -19,7 +19,7 @@ Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and se
 ```
 glitchgetaway/          ← Django project package (settings, urls, wsgi)
 escape/                 ← Django app (models, views, templates, tests)
-escape_rooms.json       ← Sample fixture data for seeding the database
+escape/fixtures/        ← Sample fixture data for seeding the database
 manage.py               ← Django management entry point
 requirements.txt        ← Python dependencies
 portfolio/              ← GitHub Pages demo & portfolio site (not part of the Django app)
