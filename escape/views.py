@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-# Create your views here.
 from .models import Room
 from django.http import HttpResponse, JsonResponse
-import random
 import json
 from django.contrib import messages
 
