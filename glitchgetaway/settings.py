@@ -31,6 +31,9 @@ DEBUG = os.environ.get('DEBUG', 'True') != 'False'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
+# Admin terminal password — override via ADMIN_PASSWORD environment variable in production
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+
 
 # Application definition
 

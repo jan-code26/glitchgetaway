@@ -29,9 +29,21 @@
         └───────────────────────────┘
         </pre>
 
+        {% if game_session %}
+        <pre class="flicker">[[ MISSION STATS ]]</pre>
+        <pre>>_ Player      : {{ game_session.display_name }}</pre>
+        <pre>>_ Time        : {{ game_session.elapsed_display }}</pre>
+        <pre>>_ Wrong guesses: {{ game_session.total_attempts }}</pre>
+        {% if rank %}
+        <pre>>_ Leaderboard rank: #{{ rank }}</pre>
+        {% endif %}
+        {% endif %}
+
         <pre>[[ END OF TRANSMISSION ]]</pre>
 
         <br>
+        <a href="{% url 'leaderboard' %}" class="terminal-button" style="text-decoration: none;">View Leaderboard</a>
+        &nbsp;
         <a href="{% url 'home' %}" class="terminal-button" style="text-decoration: none;">Restart Mission</a>
     </div>
 </div>

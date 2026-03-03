@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Room - Glitch Getaway</title>
+    <title>Login - Glitch Getaway</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -15,47 +15,48 @@
 
 <div class="terminal-screen">
     <div class="terminal-header">
-        <p>GlitchGetaway Admin - Add New Room</p>
+        <p>GlitchGetaway &mdash; Login</p>
     </div>
     <div class="terminal-body">
+        <pre class="flicker">[[ IDENTITY VERIFICATION ]]</pre>
+        <pre>Login to track your scores on the leaderboard.</pre>
+        <br>
         <form method="POST">
             {% csrf_token %}
-            <pre>> Title: <input type="text" name="title" class="terminal-input" required></pre>
-            <pre>> Description: <input type="text" name="description" class="terminal-input" required></pre>
-            <pre>> Puzzle Question: <input type="text" name="question" class="terminal-input" required></pre>
-            <pre>> Answer: <input type="text" name="answer" class="terminal-input" required></pre>
-            <pre>> Alternate Answers (comma-separated, optional): <input type="text" name="alternate_answers" class="terminal-input"></pre>
-            <pre>> Hint: <input type="text" name="hint" class="terminal-input" required></pre>
-            <pre>> Order: <input type="number" name="order" class="terminal-input" value="0" min="0" required></pre>
-            <!-- Hidden fallback submit -->
-            <button type="submit" style="display: none;"></button>
+            <pre>> Username: <input type="text" name="username" class="terminal-input" autocomplete="off" autofocus required></pre>
+            <pre>> Password: <input type="password" name="password" class="terminal-input" required></pre>
+            <br>
+            <button type="submit" class="terminal-button">[ ACCESS GRANTED ]</button>
         </form>
+
+        {% if error %}
+        <br>
+        <pre class="flicker error">{{ error }}</pre>
+        {% endif %}
+
+        <br>
+        <pre>No account yet? <a href="{% url 'register' %}" class="terminal-link">Register here</a></pre>
+        <pre>Play as guest? <a href="{% url 'home' %}" class="terminal-link">Start mission</a></pre>
     </div>
 </div>
-
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const body = document.querySelector('body');
         let theme = localStorage.getItem('theme');
-
         if (!theme) {
             const hr = new Date().getHours();
             theme = (hr >= 7 && hr <= 19) ? 'light' : 'dark';
             localStorage.setItem('theme', theme);
         }
-
         applyTheme(theme);
-
         const switcher = document.getElementById('theme-switcher');
         let darkMode = (theme === 'dark');
-
         switcher.addEventListener('click', () => {
             darkMode = !darkMode;
             theme = darkMode ? 'dark' : 'light';
             localStorage.setItem('theme', theme);
             applyTheme(theme);
         });
-
         function applyTheme(theme) {
             const styles = {
                 light: { bg: 'white', text: 'black', border: 'black', header: 'white' },

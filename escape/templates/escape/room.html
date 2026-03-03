@@ -16,15 +16,31 @@
 
 <div class="terminal-screen">
     <div class="terminal-header">
-        <p>GlitchGetaway v1.0</p>
+        <p>GlitchGetaway v1.0
+            &nbsp;|&nbsp;
+            {% if request.user.is_authenticated %}
+                user: {{ request.user.username }}
+                &nbsp;|&nbsp;
+                <a href="{% url 'logout' %}" class="header-link">logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="header-link">login</a>
+                &nbsp;/&nbsp;
+                <a href="{% url 'register' %}" class="header-link">register</a>
+            {% endif %}
+            &nbsp;|&nbsp;
+            <a href="{% url 'leaderboard' %}" class="header-link">leaderboard</a>
+        </p>
     </div>
     <div class="terminal-body">
         <pre class="flicker">[[ PROGRESS ]] {{ progress.bar }} {{ progress.solved }}/{{ progress.total }}</pre>
+        {% if game_session %}
+        <pre id="game-timer" class="flicker">[[ TIMER ]] 00:00 &nbsp; | &nbsp; Wrong attempts: {{ game_session.total_attempts }}</pre>
+        {% endif %}
 
         <pre class="flicker">[[ SYSTEM MESSAGE ]]</pre>
         <pre>{{ room.description }}</pre>
         <pre class="flicker">[[ HINT ]] Press ↑ / ↓ to recall previous commands like a real terminal.</pre>
-        <pre class="flicker">[[ COMMANDS ]] Type <code>hint</code>, <code>help</code>, or <code>clear</code> like a real terminal.</pre>
+        <pre class="flicker">[[ COMMANDS ]] Type <code>hint</code>, <code>help</code>, <code>clear</code>, or <code>leaderboard</code>.</pre>
 
         <pre class="flicker">[[ PUZZLE ]]</pre>
         <pre>{{ room.puzzle_question }}</pre>
@@ -79,6 +95,22 @@
                 body.style.setProperty('--header-text-color', 'black');
             }
         }
+
+        // Live game timer
+        {% if game_session_start_iso %}
+        const startTime = new Date("{{ game_session_start_iso }}");
+        const timerEl = document.getElementById('game-timer');
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime.getTime()) / 1000);
+            const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const secs = (elapsed % 60).toString().padStart(2, '0');
+            if (timerEl) {
+                timerEl.textContent = `[[ TIMER ]] ${mins}:${secs}  |  Wrong attempts: {{ game_session.total_attempts }}`;
+            }
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+        {% endif %}
 
         // Terminal Input Logic
         let currentInput = '';

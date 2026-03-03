@@ -30,6 +30,9 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
 
 - **Multiple Programming Languages**: Learn HTML, CSS, JavaScript, Python, and more
 - **Interactive Puzzles**: Solve real coding challenges in a fun, engaging format
+- **User Accounts**: Register and login to track your scores persistently
+- **Live Game Timer**: Elapsed time counter ticks in real time during gameplay
+- **Competitive Leaderboard**: Top-10 completions ranked by speed and accuracy
 - **Dark/Light Themes**: Comfortable coding experience with theme switching
 - **Mobile Friendly**: Play anywhere, on any device
 - **Terminal-Style Interface**: Authentic developer experience with command history
@@ -81,12 +84,14 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
 | `SECRET_KEY` | insecure dev key | Django secret key — **always set in production** |
 | `DEBUG` | `True` | Set to `False` in production |
 | `ALLOWED_HOSTS` | `*` | Comma-separated list of allowed hostnames |
+| `ADMIN_PASSWORD` | `admin123` | Game admin terminal password — **always change in production** |
 
 Example `.env` (not committed; load with your preferred tool or export manually):
 ```
 SECRET_KEY=your-production-secret-key
 DEBUG=False
 ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+ADMIN_PASSWORD=your-secure-admin-password
 ```
 
 ### Production (Gunicorn + WhiteNoise)
@@ -98,14 +103,18 @@ gunicorn glitchgetaway.wsgi
 
 ## How to Play
 
-1. Read the puzzle question carefully
-2. Type your answer in the terminal input
-3. Press Enter to submit
-4. Use special commands:
+1. (Optional) **Register** at `/play/register/` or **Login** at `/play/login/` to save your score
+2. Read the puzzle question carefully
+3. Type your answer in the terminal input
+4. Press Enter to submit
+5. Use special commands:
    - `hint` - Get a hint after 3 attempts
    - `help` - Show available commands
    - `clear` - Clear the terminal screen
-5. Solve all rooms to escape the glitch
+   - `leaderboard` - Jump to the leaderboard
+6. Solve all rooms to escape the glitch
+7. View your time, attempts, and rank on the **Success** screen
+8. Challenge others by checking `/play/leaderboard/`
 
 ## Admin Features
 

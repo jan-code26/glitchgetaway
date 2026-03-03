@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Room - Glitch Getaway</title>
+    <title>Leaderboard - Glitch Getaway</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -15,47 +15,65 @@
 
 <div class="terminal-screen">
     <div class="terminal-header">
-        <p>GlitchGetaway Admin - Add New Room</p>
+        <p>GlitchGetaway &mdash; Leaderboard</p>
     </div>
     <div class="terminal-body">
-        <form method="POST">
-            {% csrf_token %}
-            <pre>> Title: <input type="text" name="title" class="terminal-input" required></pre>
-            <pre>> Description: <input type="text" name="description" class="terminal-input" required></pre>
-            <pre>> Puzzle Question: <input type="text" name="question" class="terminal-input" required></pre>
-            <pre>> Answer: <input type="text" name="answer" class="terminal-input" required></pre>
-            <pre>> Alternate Answers (comma-separated, optional): <input type="text" name="alternate_answers" class="terminal-input"></pre>
-            <pre>> Hint: <input type="text" name="hint" class="terminal-input" required></pre>
-            <pre>> Order: <input type="number" name="order" class="terminal-input" value="0" min="0" required></pre>
-            <!-- Hidden fallback submit -->
-            <button type="submit" style="display: none;"></button>
-        </form>
+        <pre class="flicker">[[ TOP RUNNERS — FASTEST ESCAPE TIMES ]]</pre>
+        <br>
+        <table class="terminal-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>PLAYER</th>
+                    <th>TIME</th>
+                    <th>WRONG GUESSES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in top_runs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ run.display_name }}</td>
+                    <td>{{ run.elapsed_display }}</td>
+                    <td>{{ run.total_attempts }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align:center;">-- No completions yet. Be the first! --</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        {% if request.user.is_authenticated %}
+        <pre>Logged in as: {{ request.user.username }}
+  <a href="{% url 'logout' %}" class="terminal-link">logout</a></pre>
+        {% else %}
+        <pre><a href="{% url 'register' %}" class="terminal-link">Register</a> or <a href="{% url 'login' %}" class="terminal-link">Login</a> to save your score.</pre>
+        {% endif %}
+        <br>
+        <a href="{% url 'home' %}" class="terminal-button" style="text-decoration: none;">Start Mission</a>
     </div>
 </div>
-
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const body = document.querySelector('body');
         let theme = localStorage.getItem('theme');
-
         if (!theme) {
             const hr = new Date().getHours();
             theme = (hr >= 7 && hr <= 19) ? 'light' : 'dark';
             localStorage.setItem('theme', theme);
         }
-
         applyTheme(theme);
-
         const switcher = document.getElementById('theme-switcher');
         let darkMode = (theme === 'dark');
-
         switcher.addEventListener('click', () => {
             darkMode = !darkMode;
             theme = darkMode ? 'dark' : 'light';
             localStorage.setItem('theme', theme);
             applyTheme(theme);
         });
-
         function applyTheme(theme) {
             const styles = {
                 light: { bg: 'white', text: 'black', border: 'black', header: 'white' },
