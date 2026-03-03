@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
 from .models import Room
 from django.http import HttpResponse, JsonResponse
 import random
-from django.contrib.auth.decorators import login_required
 import json
 from django.contrib import messages
 
@@ -25,12 +24,6 @@ def home(request):
 def health_check(request):
     return JsonResponse({"status": "ok"})
 
-
-from django.shortcuts import get_object_or_404
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Room
-import random
 
 def room_view(request):
     room_id = request.session.get('current_room_id')

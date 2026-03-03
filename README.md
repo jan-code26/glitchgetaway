@@ -1,5 +1,6 @@
 # GlitchGetaway
 
+[![CI](https://github.com/jan-code26/glitchgetaway/actions/workflows/ci.yml/badge.svg)](https://github.com/jan-code26/glitchgetaway/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge&logo=github)](https://jan-code26.github.io/glitchgetaway/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=for-the-badge&logo=github)](https://jan-code26.github.io/glitchgetaway/)
 [![Python](https://img.shields.io/badge/python-3.8+-blue?style=for-the-badge&logo=python)](https://www.python.org)
@@ -13,7 +14,17 @@ An educational puzzle escape room where users solve coding and logic puzzles to 
 
 Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and see how the game works.
 
-![GlitchGetaway Demo](demo.gif)
+## Repository Layout
+
+```
+glitchgetaway/          ← Django project package (settings, urls, wsgi)
+escape/                 ← Django app (models, views, templates, tests)
+escape_rooms.json       ← Sample fixture data for seeding the database
+manage.py               ← Django management entry point
+requirements.txt        ← Python dependencies
+portfolio/              ← GitHub Pages demo & portfolio site (not part of the Django app)
+.github/workflows/      ← CI (ci.yml) and GitHub Pages deploy (pages.yml)
+```
 
 ## Features
 
@@ -34,28 +45,56 @@ Experience GlitchGetaway instantly in your browser. Solve a sample puzzle and se
    cd glitchgetaway
    ```
 
-2. **Install dependencies**
+2. **Create and activate a virtual environment**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate   # Windows: .venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run migrations**
+4. **Run migrations**
    ```bash
    python manage.py migrate
    ```
 
-4. **Load sample rooms**
+5. **Load sample rooms**
    ```bash
    python manage.py loaddata escape_rooms.json
    ```
 
-5. **Start the server**
+6. **Start the server**
    ```bash
    python manage.py runserver
    ```
 
-6. **Open your browser**
+7. **Open your browser**
    Navigate to `http://localhost:8000` and start playing
+
+### Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `SECRET_KEY` | insecure dev key | Django secret key — **always set in production** |
+| `DEBUG` | `True` | Set to `False` in production |
+| `ALLOWED_HOSTS` | `*` | Comma-separated list of allowed hostnames |
+
+Example `.env` (not committed; load with your preferred tool or export manually):
+```
+SECRET_KEY=your-production-secret-key
+DEBUG=False
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+```
+
+### Production (Gunicorn + WhiteNoise)
+
+```bash
+python manage.py collectstatic --noinput
+gunicorn glitchgetaway.wsgi
+```
 
 ## How to Play
 
@@ -81,6 +120,12 @@ Available admin commands:
 - `delete_room <id>` - Remove a room
 - `upload_rooms` - Bulk upload rooms via JSON
 - `logout` - Exit admin mode
+
+## Running Tests
+
+```bash
+python manage.py test escape
+```
 
 ## Technologies Used
 
