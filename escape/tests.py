@@ -2,8 +2,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from unittest.mock import patch, MagicMock
 
-from .models import GameSession, Room
+from .models import GameSession, GeneratedPuzzle, Room
 
 
 class SmokeTests(TestCase):
@@ -287,4 +288,169 @@ class LeaderboardTests(TestCase):
         response = self.client.get(reverse("success"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "rank")
+
+
+# ── AI puzzle generation tests ──────────────────────────────────────────────
+
+SAMPLE_PUZZLES = [
+    {
+        "order": 1,
+        "title": "Hello World",
+        "description": "A classic puzzle.",
+        "puzzle_question": "What does print('hello') output?",
+        "puzzle_answer": "hello",
+        "alternate_answers": "",
+        "hint": "It prints what's in the quotes.",
+    }
+]
+
+
+class GeneratedPuzzleModelTests(TestCase):
+    """Tests for the GeneratedPuzzle model."""
+
+    def _make_puzzle(self, **kwargs):
+        defaults = dict(
+            order=1,
+            title="Test Puzzle",
+            description="A test.",
+            puzzle_question="Q?",
+            puzzle_answer="a",
+        )
+        defaults.update(kwargs)
+        return GeneratedPuzzle.objects.create(**defaults)
+
+    def test_default_status_is_pending(self):
+        gp = self._make_puzzle()
+        self.assertEqual(gp.status, GeneratedPuzzle.STATUS_PENDING)
+
+    def test_str_includes_status_and_title(self):
+        gp = self._make_puzzle(title="My Puzzle")
+        self.assertIn("Pending", str(gp))
+        self.assertIn("My Puzzle", str(gp))
+
+    def test_ordering_newest_first(self):
+        gp1 = self._make_puzzle(title="First")
+        gp2 = self._make_puzzle(title="Second")
+        puzzles = list(GeneratedPuzzle.objects.all())
+        self.assertEqual(puzzles[0], gp2)
+        self.assertEqual(puzzles[1], gp1)
+
+
+class GeneratePuzzlesServiceTests(TestCase):
+    """Unit tests for escape.services.generate_puzzles_from_ai."""
+
+    def test_raises_when_api_key_missing(self):
+        from escape.services import generate_puzzles_from_ai
+        with self.settings(ANTHROPIC_API_KEY=''):
+            with self.assertRaises(RuntimeError):
+                generate_puzzles_from_ai(count=1)
+
+    @patch('escape.services.anthropic')
+    def test_valid_response_returns_puzzle_list(self, mock_anthropic_module):
+        import json
+        from escape.services import generate_puzzles_from_ai
+
+        mock_client = MagicMock()
+        mock_anthropic_module.Anthropic.return_value = mock_client
+        mock_message = MagicMock()
+        mock_message.content = [MagicMock(text=json.dumps(SAMPLE_PUZZLES))]
+        mock_client.messages.create.return_value = mock_message
+
+        with self.settings(ANTHROPIC_API_KEY='test-key'):
+            result = generate_puzzles_from_ai(count=1)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['puzzle_answer'], 'hello')
+
+    @patch('escape.services.anthropic')
+    def test_invalid_json_raises_runtime_error(self, mock_anthropic_module):
+        from escape.services import generate_puzzles_from_ai
+
+        mock_client = MagicMock()
+        mock_anthropic_module.Anthropic.return_value = mock_client
+        mock_message = MagicMock()
+        mock_message.content = [MagicMock(text="not json at all")]
+        mock_client.messages.create.return_value = mock_message
+
+        with self.settings(ANTHROPIC_API_KEY='test-key'):
+            with self.assertRaises(RuntimeError):
+                generate_puzzles_from_ai(count=1)
+
+
+class GeneratePuzzlesCommandTests(TestCase):
+    """Tests for the generate_puzzles management command."""
+
+    @patch('escape.services.anthropic')
+    def test_command_creates_pending_puzzles(self, mock_anthropic_module):
+        import json
+        from django.core.management import call_command
+        from io import StringIO
+
+        mock_client = MagicMock()
+        mock_anthropic_module.Anthropic.return_value = mock_client
+        mock_message = MagicMock()
+        mock_message.content = [MagicMock(text=json.dumps(SAMPLE_PUZZLES))]
+        mock_client.messages.create.return_value = mock_message
+
+        out = StringIO()
+        with self.settings(ANTHROPIC_API_KEY='test-key'):
+            call_command('generate_puzzles', '--count', '1', stdout=out)
+
+        self.assertEqual(GeneratedPuzzle.objects.count(), 1)
+        gp = GeneratedPuzzle.objects.first()
+        self.assertEqual(gp.status, GeneratedPuzzle.STATUS_PENDING)
+        self.assertIn("1 GeneratedPuzzle", out.getvalue())
+
+    @patch('escape.services.anthropic')
+    def test_command_error_when_api_key_missing(self, _mock):
+        from django.core.management import call_command
+        from django.core.management.base import CommandError
+
+        with self.settings(ANTHROPIC_API_KEY=''):
+            with self.assertRaises(CommandError):
+                call_command('generate_puzzles', '--count', '1')
+
+
+class AdminApproveRejectTests(TestCase):
+    """Tests for the approve/reject admin actions on GeneratedPuzzle."""
+
+    def setUp(self):
+        self.superuser = User.objects.create_superuser('admin', 'a@a.com', 'pass')
+        self.client.login(username='admin', password='pass')
+        self.gp = GeneratedPuzzle.objects.create(
+            order=1,
+            title="AI Puzzle",
+            description="desc",
+            puzzle_question="Q?",
+            puzzle_answer="ans",
+            hint="hint",
+        )
+
+    def test_approve_action_creates_room(self):
+        data = {
+            'action': 'approve_puzzles',
+            '_selected_action': [self.gp.pk],
+        }
+        self.client.post(
+            '/admin/escape/generatedpuzzle/',
+            data,
+            follow=True,
+        )
+        self.gp.refresh_from_db()
+        self.assertEqual(self.gp.status, GeneratedPuzzle.STATUS_APPROVED)
+        self.assertTrue(Room.objects.filter(title="AI Puzzle").exists())
+
+    def test_reject_action_marks_rejected(self):
+        data = {
+            'action': 'reject_puzzles',
+            '_selected_action': [self.gp.pk],
+        }
+        self.client.post(
+            '/admin/escape/generatedpuzzle/',
+            data,
+            follow=True,
+        )
+        self.gp.refresh_from_db()
+        self.assertEqual(self.gp.status, GeneratedPuzzle.STATUS_REJECTED)
+        self.assertFalse(Room.objects.filter(title="AI Puzzle").exists())
 

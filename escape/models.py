@@ -33,6 +33,41 @@ class Room(models.Model):
         return self.title
 
 
+class GeneratedPuzzle(models.Model):
+    """An AI-generated puzzle awaiting admin review before going live."""
+
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_REJECTED, 'Rejected'),
+    ]
+
+    order = models.PositiveIntegerField(default=0, help_text="Suggested display order.")
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    puzzle_question = models.TextField()
+    puzzle_answer = models.CharField(max_length=100)
+    alternate_answers = models.TextField(
+        blank=True,
+        default='',
+        help_text="Comma-separated list of additional accepted answers (case-insensitive).",
+    )
+    hint = models.TextField(blank=True, default="No hint available.")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_notes = models.TextField(blank=True, default='')
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.get_status_display()}] {self.title}"
+
+
 class GameSession(models.Model):
     """Tracks a single play-through, optionally linked to an authenticated user."""
 
