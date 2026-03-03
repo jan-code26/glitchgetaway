@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 import json
@@ -8,9 +9,13 @@ from .models import Room
 
 
 def get_progress(request):
-    current_id = request.session.get('current_room_id')
+    room_id = request.session.get('current_room_id')
     total = Room.objects.count()
-    solved = Room.objects.filter(id__lt=current_id).count()
+    current_room = Room.objects.filter(id=room_id).first()
+    if current_room:
+        solved = Room.objects.filter(order__lt=current_room.order).count()
+    else:
+        solved = 0
     bar = '█' * solved + '-' * (total - solved)
     return {'solved': solved, 'total': total, 'bar': bar}
 
@@ -47,7 +52,7 @@ def room_view(request):
         answer = request.POST.get('answer', '').strip().lower()
         if answer.startswith("sudo login"):
             code = answer.split()[-1]
-            if code == "admin123":
+            if code == settings.ADMIN_PASSWORD:
                 request.session['is_admin'] = True
                 return redirect('admin_terminal')
             else:
@@ -74,13 +79,13 @@ def room_view(request):
             error = ""  # empty error clears screen effect
             return render(request, 'escape/room.html', {'room': room, 'error': error, 'progress': get_progress(request)})
 
-        # Check if answer is correct
-        if answer == room.puzzle_answer.strip().lower():
+        # Check if answer is correct (primary + alternate answers)
+        if room.is_answer_correct(answer):
             # Clear attempts on success
             attempts.pop(str(room_id), None)
             request.session['attempts'] = attempts
 
-            next_room = Room.objects.filter(id__gt=room.id).first()
+            next_room = Room.objects.filter(order__gt=room.order).first()
             if next_room:
                 request.session['current_room_id'] = next_room.id
                 return redirect('room')
@@ -109,7 +114,7 @@ def success_view(request):
 # Admin terminal entry point
 def admin_terminal(request):
     if not request.session.get('is_admin'):
-        if request.method == 'POST' and request.POST.get('admin_code') == 'admin123':
+        if request.method == 'POST' and request.POST.get('admin_code') == settings.ADMIN_PASSWORD:
             request.session['is_admin'] = True
             return redirect('admin_terminal')
         else:
@@ -153,10 +158,12 @@ def admin_add_room(request):
 
     if request.method == 'POST':
         Room.objects.create(
+            order=int(request.POST.get('order', 0)),
             title=request.POST['title'],
             description=request.POST['description'],
             puzzle_question=request.POST['question'],
             puzzle_answer=request.POST['answer'],
+            alternate_answers=request.POST.get('alternate_answers', ''),
             hint=request.POST['hint']
         )
         return redirect('admin_terminal')
@@ -175,10 +182,12 @@ def admin_upload_rooms(request):
             data = json.loads(raw_json)
             new_rooms = [
                 Room(
+                    order=item.get('order', 0),
                     title=item['title'],
                     description=item['description'],
                     puzzle_question=item['puzzle_question'],
                     puzzle_answer=item['puzzle_answer'],
+                    alternate_answers=item.get('alternate_answers', ''),
                     hint=item.get('hint', '')
                 ) for item in data
             ]

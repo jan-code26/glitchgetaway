@@ -3,10 +3,12 @@
     "model": "escape.room",
     "pk": 1,
     "fields": {
+      "order": 1,
       "title": "Room 1: HTML Escape",
       "description": "Welcome! Your first glitch is broken HTML.",
       "puzzle_question": "What is the correct closing tag for an HTML paragraph?",
       "puzzle_answer": "</p>",
+      "alternate_answers": "",
       "hint": "All HTML tags use angled brackets. A closing tag starts with a slash."
     }
   },
@@ -14,10 +16,12 @@
     "model": "escape.room",
     "pk": 2,
     "fields": {
+      "order": 2,
       "title": "Room 2: CSS Confusion",
       "description": "Colors are messed up. Fix it!",
       "puzzle_question": "In CSS, what property changes the text color?",
       "puzzle_answer": "color",
+      "alternate_answers": "",
       "hint": "This CSS property is not about font or background."
     }
   },
@@ -25,21 +29,25 @@
     "model": "escape.room",
     "pk": 3,
     "fields": {
+      "order": 3,
       "title": "Room 3: JS Madness",
       "description": "Time to fix a broken JavaScript function!",
       "puzzle_question": "In JavaScript, what keyword is used to declare a variable?",
       "puzzle_answer": "var",
-      "hint": "This keyword is old but still valid. It's not 'let' or 'const'."
+      "alternate_answers": "let, const",
+      "hint": "There are three keywords: var (old), let, and const (modern). Any of the three is accepted."
     }
   },
   {
     "model": "escape.room",
     "pk": 4,
     "fields": {
+      "order": 4,
       "title": "Room 4: Python Problem",
       "description": "The glitch spreads to Python scripts!",
       "puzzle_question": "In Python, how do you print \"Hello World\"?",
       "puzzle_answer": "print(\"Hello World\")",
+      "alternate_answers": "print('Hello World')",
       "hint": "Use a function with parentheses. Python 3 style!"
     }
   },
@@ -47,10 +55,12 @@
     "model": "escape.room",
     "pk": 5,
     "fields": {
+      "order": 5,
       "title": "Room 5: The Final Firewall",
       "description": "Last glitch to escape!",
       "puzzle_question": "What HTTP status code means \"Not Found\"?",
       "puzzle_answer": "404",
+      "alternate_answers": "",
       "hint": "Think about broken links on websites. Classic error code."
     }
   }
