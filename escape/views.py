@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+from django.utils import timezone
 import json
 
-from .models import Room
+from .models import GameSession, Room
 
 
 def get_progress(request):
@@ -26,12 +29,19 @@ def portfolio(request):
 
 
 def home(request):
-    """Redirect to the game (kept for backwards compatibility)"""
+    """Redirect to the game; creates a GameSession when a fresh game starts."""
     if 'current_room_id' not in request.session:
         first_room = Room.objects.first()
         if not first_room:
             return HttpResponse("No rooms available. Please contact administrator.", status=500)
         request.session['current_room_id'] = first_room.id
+        request.session['attempts'] = {}
+        display_name = request.user.username if request.user.is_authenticated else 'Anonymous'
+        session_obj = GameSession.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            display_name=display_name,
+        )
+        request.session['game_session_id'] = session_obj.id
     return redirect('room')
 
 
@@ -42,49 +52,56 @@ def health_check(request):
 def room_view(request):
     room_id = request.session.get('current_room_id')
     room = Room.objects.filter(id=room_id).first()
+    game_session = GameSession.objects.filter(id=request.session.get('game_session_id')).first()
 
     if not room:
         request.session.flush()
         return redirect('home')
 
-    error = None
+    start_iso = game_session.started_at.isoformat() if game_session else ''
+
+    def render_room(error=None):
+        return render(request, 'escape/room.html', {
+            'room': room,
+            'error': error,
+            'progress': get_progress(request),
+            'game_session': game_session,
+            'game_session_start_iso': start_iso,
+        })
+
     if request.method == 'POST':
         answer = request.POST.get('answer', '').strip().lower()
+
         if answer.startswith("sudo login"):
             code = answer.split()[-1]
             if code == settings.ADMIN_PASSWORD:
                 request.session['is_admin'] = True
                 return redirect('admin_terminal')
             else:
-                error = "[[ ACCESS DENIED ]] Invalid admin code."
-        room_id = room.id
+                return render_room("[[ ACCESS DENIED ]] Invalid admin code.")
 
-        # Initialize attempts tracker
+        room_id = room.id
         attempts = request.session.get('attempts', {})
         room_attempts = attempts.get(str(room_id), 0)
 
-        # Handle terminal commands
         if answer == 'hint':
             if room_attempts >= 3:
-                error = f"[[ SYSTEM HINT ]] {room.hint}"
+                return render_room(f"[[ SYSTEM HINT ]] {room.hint}")
             else:
-                error = "[[ SYSTEM MESSAGE ]] Hint not available yet. Try solving first."
-            return render(request, 'escape/room.html', {'room': room, 'error': error, 'progress': get_progress(request)})
+                return render_room("[[ SYSTEM MESSAGE ]] Hint not available yet. Try solving first.")
 
         elif answer == 'help':
-            error = "[[ COMMANDS ]] help, hint, clear"
-            return render(request, 'escape/room.html', {'room': room, 'error': error, 'progress': get_progress(request)})
+            return render_room("[[ COMMANDS ]] help, hint, clear, leaderboard")
 
         elif answer == 'clear':
-            error = ""  # empty error clears screen effect
-            return render(request, 'escape/room.html', {'room': room, 'error': error, 'progress': get_progress(request)})
+            return render_room("")
 
-        # Check if answer is correct (primary + alternate answers)
+        elif answer == 'leaderboard':
+            return redirect('leaderboard')
+
         if room.is_answer_correct(answer):
-            # Clear attempts on success
             attempts.pop(str(room_id), None)
             request.session['attempts'] = attempts
-
             next_room = Room.objects.filter(order__gt=room.order).first()
             if next_room:
                 request.session['current_room_id'] = next_room.id
@@ -92,26 +109,88 @@ def room_view(request):
             else:
                 return redirect('success')
         else:
-            # Increase attempt count
             attempts[str(room_id)] = room_attempts + 1
             request.session['attempts'] = attempts
-            error = "[[ SYSTEM ]] Incorrect. Try again."
+            if game_session:
+                game_session.total_attempts += 1
+                game_session.save(update_fields=['total_attempts'])
+            return render_room("[[ SYSTEM ]] Incorrect. Try again.")
 
-        return render(request, 'escape/room.html', {'room': room, 'error': error, 'progress': get_progress(request)})
-
-    return render(request, 'escape/room.html', {
-        'room': room,
-        'error': error,
-        'progress': get_progress(request),
-    })
+    return render_room()
 
 
 def success_view(request):
+    game_session_id = request.session.get('game_session_id')
+    game_session = None
+    rank = None
+    if game_session_id:
+        game_session = GameSession.objects.filter(id=game_session_id).first()
+        if game_session and not game_session.completed:
+            game_session.completed = True
+            game_session.finished_at = timezone.now()
+            game_session.save()
+        if game_session and game_session.completed:
+            all_completed = sorted(
+                GameSession.objects.filter(completed=True),
+                key=lambda s: (s.elapsed_seconds or 0, s.total_attempts),
+            )
+            rank = next((i + 1 for i, s in enumerate(all_completed) if s.id == game_session.id), None)
     request.session.flush()
-    return render(request, 'escape/success.html')
+    return render(request, 'escape/success.html', {'game_session': game_session, 'rank': rank})
 
 
-# Admin terminal entry point
+def leaderboard_view(request):
+    all_completed = sorted(
+        GameSession.objects.filter(completed=True),
+        key=lambda s: (s.elapsed_seconds or 0, s.total_attempts),
+    )
+    top_runs = all_completed[:10]
+    return render(request, 'escape/leaderboard.html', {'top_runs': top_runs})
+
+
+# ── Auth views ────────────────────────────────────────────────────────────────
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        if not username or not password:
+            error = "[[ ERROR ]] Username and password are required."
+        elif User.objects.filter(username=username).exists():
+            error = "[[ ERROR ]] Username already taken. Choose another."
+        else:
+            user = User.objects.create_user(username=username, password=password)
+            login(request, user)
+            return redirect('home')
+    return render(request, 'escape/register.html', {'error': error})
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            error = "[[ ERROR ]] Invalid credentials. Try again."
+    return render(request, 'escape/login.html', {'error': error})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('portfolio')
+
+
+# ── Admin views ───────────────────────────────────────────────────────────────
+
 def admin_terminal(request):
     if not request.session.get('is_admin'):
         if request.method == 'POST' and request.POST.get('admin_code') == settings.ADMIN_PASSWORD:
@@ -151,7 +230,6 @@ def admin_terminal(request):
     return render(request, 'escape/admin_terminal.html', {'output': output})
 
 
-# Add-room form view
 def admin_add_room(request):
     if not request.session.get('is_admin'):
         return redirect('admin_terminal')
@@ -171,7 +249,6 @@ def admin_add_room(request):
     return render(request, 'escape/admin_add_room.html')
 
 
-# Upload JSON view
 def admin_upload_rooms(request):
     if not request.session.get('is_admin'):
         return redirect('admin_terminal')

@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard - Glitch Getaway</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="terminal">
+<button id="theme-switcher"
+        style="position: fixed; top: 10px; right: 10px; padding: 5px 10px; cursor: pointer;">
+    Switch Theme
+</button>
+
+<div class="terminal-screen">
+    <div class="terminal-header">
+        <p>GlitchGetaway &mdash; Leaderboard</p>
+    </div>
+    <div class="terminal-body">
+        <pre class="flicker">[[ TOP RUNNERS — FASTEST ESCAPE TIMES ]]</pre>
+        <br>
+        <table class="terminal-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>PLAYER</th>
+                    <th>TIME</th>
+                    <th>WRONG GUESSES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in top_runs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ run.display_name }}</td>
+                    <td>{{ run.elapsed_display }}</td>
+                    <td>{{ run.total_attempts }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align:center;">-- No completions yet. Be the first! --</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        {% if request.user.is_authenticated %}
+        <pre>Logged in as: {{ request.user.username }}
+  <a href="{% url 'logout' %}" class="terminal-link">logout</a></pre>
+        {% else %}
+        <pre><a href="{% url 'register' %}" class="terminal-link">Register</a> or <a href="{% url 'login' %}" class="terminal-link">Login</a> to save your score.</pre>
+        {% endif %}
+        <br>
+        <a href="{% url 'home' %}" class="terminal-button" style="text-decoration: none;">Start Mission</a>
+    </div>
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const body = document.querySelector('body');
+        let theme = localStorage.getItem('theme');
+        if (!theme) {
+            const hr = new Date().getHours();
+            theme = (hr >= 7 && hr <= 19) ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+        }
+        applyTheme(theme);
+        const switcher = document.getElementById('theme-switcher');
+        let darkMode = (theme === 'dark');
+        switcher.addEventListener('click', () => {
+            darkMode = !darkMode;
+            theme = darkMode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        });
+        function applyTheme(theme) {
+            const styles = {
+                light: { bg: 'white', text: 'black', border: 'black', header: 'white' },
+                dark: { bg: 'black', text: '#00FF00', border: '#00FF00', header: 'black' }
+            };
+            const t = styles[theme];
+            body.style.setProperty('--background-color', t.bg);
+            body.style.setProperty('--text-color', t.text);
+            body.style.setProperty('--border-color', t.border);
+            body.style.setProperty('--header-text-color', t.header);
+        }
+    });
+</script>
+</body>
+</html>

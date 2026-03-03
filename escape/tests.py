@@ -1,7 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.models import User
+from django.utils import timezone
 
-from .models import Room
+from .models import GameSession, Room
 
 
 class SmokeTests(TestCase):
@@ -118,4 +120,171 @@ class RoomOrderingTests(TestCase):
         self.client.post(reverse("room"), {"answer": "a"})
         session = self.client.session
         self.assertEqual(session["current_room_id"], self.room2.id)
+
+
+class UserAuthTests(TestCase):
+    """Tests for user registration, login, and logout."""
+
+    def setUp(self):
+        Room.objects.create(order=1, title="R", description="D",
+                            puzzle_question="Q", puzzle_answer="a")
+
+    def test_register_page_loads(self):
+        response = self.client.get(reverse("register"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_page_loads(self):
+        response = self.client.get(reverse("login"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_register_creates_user_and_redirects(self):
+        response = self.client.post(reverse("register"),
+                                    {"username": "newplayer", "password": "secret123"})
+        self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
+        self.assertTrue(User.objects.filter(username="newplayer").exists())
+
+    def test_register_duplicate_username_shows_error(self):
+        User.objects.create_user(username="taken", password="x")
+        response = self.client.post(reverse("register"),
+                                    {"username": "taken", "password": "y"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "already taken")
+
+    def test_login_valid_credentials_redirects(self):
+        User.objects.create_user(username="player1", password="pass1")
+        response = self.client.post(reverse("login"),
+                                    {"username": "player1", "password": "pass1"})
+        self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
+
+    def test_login_invalid_credentials_shows_error(self):
+        response = self.client.post(reverse("login"),
+                                    {"username": "nobody", "password": "wrong"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Invalid credentials")
+
+    def test_logout_redirects_to_portfolio(self):
+        User.objects.create_user(username="p", password="p")
+        self.client.login(username="p", password="p")
+        response = self.client.get(reverse("logout"))
+        self.assertRedirects(response, reverse("portfolio"), fetch_redirect_response=False)
+
+    def test_authenticated_user_redirected_away_from_register(self):
+        User.objects.create_user(username="already", password="here")
+        self.client.login(username="already", password="here")
+        response = self.client.get(reverse("register"))
+        self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
+
+
+class GameSessionTests(TestCase):
+    """Tests for GameSession creation and finalisation."""
+
+    def setUp(self):
+        self.room = Room.objects.create(order=1, title="T", description="D",
+                                        puzzle_question="Q", puzzle_answer="ans")
+
+    def test_game_session_created_on_home(self):
+        self.client.get(reverse("home"))
+        self.assertEqual(GameSession.objects.count(), 1)
+
+    def test_game_session_linked_to_user(self):
+        user = User.objects.create_user(username="gamer", password="pw")
+        self.client.login(username="gamer", password="pw")
+        self.client.get(reverse("home"))
+        gs = GameSession.objects.first()
+        self.assertEqual(gs.user, user)
+        self.assertEqual(gs.display_name, "gamer")
+
+    def test_wrong_answer_increments_total_attempts(self):
+        self.client.get(reverse("home"))
+        gs = GameSession.objects.first()
+        session = self.client.session
+        session["current_room_id"] = self.room.id
+        session.save()
+        self.client.post(reverse("room"), {"answer": "wrong"})
+        gs.refresh_from_db()
+        self.assertEqual(gs.total_attempts, 1)
+
+    def test_success_finalises_game_session(self):
+        self.client.get(reverse("home"))
+        gs = GameSession.objects.first()
+        session = self.client.session
+        session["current_room_id"] = self.room.id
+        session["game_session_id"] = gs.id
+        session.save()
+        self.client.post(reverse("room"), {"answer": "ans"})
+        self.client.get(reverse("success"))
+        gs.refresh_from_db()
+        self.assertTrue(gs.completed)
+        self.assertIsNotNone(gs.finished_at)
+
+    def test_elapsed_display_format(self):
+        gs = GameSession(
+            started_at=timezone.now() - timezone.timedelta(seconds=125),
+            finished_at=timezone.now(),
+            completed=True,
+        )
+        # elapsed ≈ 125 s → 02:05
+        self.assertEqual(gs.elapsed_display, "02:05")
+
+    def test_elapsed_display_none_when_not_finished(self):
+        gs = GameSession(started_at=timezone.now(), completed=False)
+        self.assertEqual(gs.elapsed_display, "--:--")
+
+
+class LeaderboardTests(TestCase):
+    """Tests for the leaderboard view."""
+
+    def setUp(self):
+        Room.objects.create(order=1, title="R", description="D",
+                            puzzle_question="Q", puzzle_answer="a")
+
+    def _make_session(self, name, elapsed_secs, attempts=0):
+        start = timezone.now() - timezone.timedelta(seconds=elapsed_secs)
+        return GameSession.objects.create(
+            display_name=name,
+            started_at=start,
+            finished_at=timezone.now(),
+            total_attempts=attempts,
+            completed=True,
+        )
+
+    def test_leaderboard_page_loads(self):
+        response = self.client.get(reverse("leaderboard"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_leaderboard_shows_completed_sessions(self):
+        self._make_session("alice", 60)
+        self._make_session("bob", 90)
+        response = self.client.get(reverse("leaderboard"))
+        self.assertContains(response, "alice")
+        self.assertContains(response, "bob")
+
+    def test_leaderboard_ordered_fastest_first(self):
+        self._make_session("slow", 300)
+        self._make_session("fast", 30)
+        response = self.client.get(reverse("leaderboard"))
+        content = response.content.decode()
+        self.assertLess(content.index("fast"), content.index("slow"))
+
+    def test_leaderboard_command_in_room_redirects(self):
+        session = self.client.session
+        room = Room.objects.first()
+        session["current_room_id"] = room.id
+        session.save()
+        response = self.client.post(reverse("room"), {"answer": "leaderboard"})
+        self.assertRedirects(response, reverse("leaderboard"), fetch_redirect_response=False)
+
+    def test_success_view_shows_rank(self):
+        self._make_session("other", 30)  # faster player already in board
+        room = Room.objects.first()
+        self.client.get(reverse("home"))
+        gs = GameSession.objects.latest('id')
+        session = self.client.session
+        session["current_room_id"] = room.id
+        session["game_session_id"] = gs.id
+        session.save()
+        self.client.post(reverse("room"), {"answer": "a"})
+        response = self.client.get(reverse("success"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "rank")
 
