@@ -3,12 +3,26 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.db.models import DurationField, ExpressionWrapper, F
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 import json
 
 from .models import GameSession, Room
+
+
+def _leaderboard_qs():
+    """Completed GameSessions annotated with elapsed duration, ordered fastest first."""
+    return (
+        GameSession.objects
+        .filter(completed=True)
+        .annotate(elapsed=ExpressionWrapper(
+            F('finished_at') - F('started_at'),
+            output_field=DurationField(),
+        ))
+        .order_by('elapsed', 'total_attempts')
+    )
 
 
 def get_progress(request):
@@ -130,21 +144,14 @@ def success_view(request):
             game_session.finished_at = timezone.now()
             game_session.save()
         if game_session and game_session.completed:
-            all_completed = sorted(
-                GameSession.objects.filter(completed=True),
-                key=lambda s: (s.elapsed_seconds or 0, s.total_attempts),
-            )
-            rank = next((i + 1 for i, s in enumerate(all_completed) if s.id == game_session.id), None)
+            current_elapsed = game_session.finished_at - game_session.started_at
+            rank = _leaderboard_qs().filter(elapsed__lt=current_elapsed).count() + 1
     request.session.flush()
     return render(request, 'escape/success.html', {'game_session': game_session, 'rank': rank})
 
 
 def leaderboard_view(request):
-    all_completed = sorted(
-        GameSession.objects.filter(completed=True),
-        key=lambda s: (s.elapsed_seconds or 0, s.total_attempts),
-    )
-    top_runs = all_completed[:10]
+    top_runs = _leaderboard_qs()[:10]
     return render(request, 'escape/leaderboard.html', {'top_runs': top_runs})
 
 
