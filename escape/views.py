@@ -227,12 +227,33 @@ def admin_terminal(request):
         elif cmd == 'upload_rooms':
             return redirect('admin_upload_rooms')
 
+        elif cmd.startswith('generate_puzzles'):
+            parts = cmd.split()
+            count = 3
+            if len(parts) > 1:
+                try:
+                    count = int(parts[-1])
+                except ValueError:
+                    output = "Usage: generate_puzzles [count]"
+                    return render(request, 'escape/admin_terminal.html', {'output': output})
+            try:
+                from escape.services import generate_puzzles_from_ai
+                from escape.models import GeneratedPuzzle
+                puzzles = generate_puzzles_from_ai(count=count)
+                GeneratedPuzzle.objects.bulk_create([GeneratedPuzzle(**p) for p in puzzles])
+                output = (
+                    f"Generated {len(puzzles)} puzzle(s). "
+                    "Review and approve them in the Django admin: /django-admin/escape/generatedpuzzle/"
+                )
+            except Exception as e:
+                output = f"[[ ERROR ]] {e}"
+
         elif cmd == 'logout':
             request.session['is_admin'] = False
             return redirect('home')
 
         else:
-            output = "Unknown command. Try: list_rooms, add_room, delete_room <id>, upload_rooms, logout"
+            output = "Unknown command. Try: list_rooms, add_room, delete_room <id>, upload_rooms, generate_puzzles [count], logout"
 
     return render(request, 'escape/admin_terminal.html', {'output': output})
 

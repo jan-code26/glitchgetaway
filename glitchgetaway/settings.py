@@ -34,6 +34,9 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 # Admin terminal password — override via ADMIN_PASSWORD environment variable in production
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
+# Anthropic API key for AI puzzle generation — set via environment variable in production
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+
 
 # Application definition
 
