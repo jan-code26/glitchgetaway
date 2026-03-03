@@ -136,6 +136,17 @@ Available admin commands:
 python manage.py test escape
 ```
 
+This command discovers and runs all tests in `escape/tests.py`. There are currently **34 tests** across six test classes, all of which pass:
+
+| Test class | # tests | What it covers |
+|---|---|---|
+| `SmokeTests` | 7 | Key routes return expected HTTP status codes: health check, portfolio page, home redirect, room GET, correct/wrong answer submission, and the success page. |
+| `AlternateAnswersTests` | 6 | The multiple-accepted-answers feature on `Room`: primary answer, each alternate answer, case-insensitive matching, and that submitting an alternate answer via the room view redirects correctly. |
+| `RoomOrderingTests` | 2 | Rooms are returned in `order`-field sequence, and a correct answer advances the session to the next ordered room. |
+| `UserAuthTests` | 8 | Register and login pages load; registration creates a user and redirects; duplicate username shows an error; valid/invalid login credentials; logout redirects to portfolio; authenticated users are redirected away from the register page. |
+| `GameSessionTests` | 6 | A `GameSession` is created when a game starts; it is linked to the logged-in user; wrong answers increment `total_attempts`; the success view finalises the session (`completed`, `finished_at`); `elapsed_display` formats time correctly for finished and unfinished sessions. |
+| `LeaderboardTests` | 5 | Leaderboard page loads; completed sessions appear on it; entries are ordered fastest-first; typing `leaderboard` in the room redirects there; the success view displays the player's rank. |
+
 ## Technologies Used
 
 - **Backend**: Django 5.2, Python
