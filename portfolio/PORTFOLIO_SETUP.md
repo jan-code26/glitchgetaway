@@ -2,7 +2,7 @@
 
 ## Step 1: Upload Your Files
 
-Upload these files to `/workspaces/glitchgetaway/escape/static/images/`:
+Upload these files to `escape/static/images/` in the repository root:
 
 1. **Profile Photo**: Name it `profile-photo.jpg` (or `.png`)
    - Recommended size: 400x550px (3:4 aspect ratio)
