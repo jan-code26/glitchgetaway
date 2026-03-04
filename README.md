@@ -30,6 +30,7 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
 
 - **Multiple Programming Languages**: Learn HTML, CSS, JavaScript, Python, and more
 - **Interactive Puzzles**: Solve real coding challenges in a fun, engaging format
+- **AI-Generated Puzzles**: Auto-generate new puzzles using the Anthropic API with admin review before going live
 - **User Accounts**: Register and login to track your scores persistently
 - **Live Game Timer**: Elapsed time counter ticks in real time during gameplay
 - **Competitive Leaderboard**: Top-10 completions ranked by speed and accuracy
@@ -85,6 +86,7 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
 | `DEBUG` | `True` | Set to `False` in production |
 | `ALLOWED_HOSTS` | `*` | Comma-separated list of allowed hostnames |
 | `ADMIN_PASSWORD` | `admin123` | Game admin terminal password — **always change in production** |
+| `ANTHROPIC_API_KEY` | *(empty)* | Anthropic API key for AI puzzle generation — required to use `generate_puzzles` |
 
 Example `.env` (not committed; load with your preferred tool or export manually):
 ```
@@ -92,6 +94,7 @@ SECRET_KEY=your-production-secret-key
 DEBUG=False
 ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 ADMIN_PASSWORD=your-secure-admin-password
+ANTHROPIC_API_KEY=sk-ant-your-api-key
 ```
 
 ### Production (Gunicorn + WhiteNoise)
@@ -128,7 +131,32 @@ Available admin commands:
 - `add_room` - Add a new puzzle room
 - `delete_room <id>` - Remove a room
 - `upload_rooms` - Bulk upload rooms via JSON
+- `generate_puzzles [count]` - Generate AI-powered puzzles (requires `ANTHROPIC_API_KEY`)
 - `logout` - Exit admin mode
+
+### AI Puzzle Generation
+
+GlitchGetaway integrates the [Anthropic API](https://www.anthropic.com) to automatically generate hacker-themed escape room puzzles. Generated puzzles go through a human-in-the-loop review workflow before they appear in the game.
+
+**Workflow:**
+
+1. **Generate** — run the management command or use the in-game terminal:
+   ```bash
+   # CLI (e.g. cron job or one-off)
+   python manage.py generate_puzzles --count 5
+
+   # Or from the in-game admin terminal:
+   generate_puzzles 5
+   ```
+   Puzzles are saved as `pending` records and are **not yet visible** to players.
+
+2. **Review** — open the Django admin at `/admin/escape/generatedpuzzle/` to see pending puzzles.
+
+3. **Approve or Reject** — select puzzles and use the bulk actions:
+   - **Approve** → automatically creates a live `Room` and makes it playable
+   - **Reject** → marks the puzzle rejected; no room is created
+
+> **Note:** Set the `ANTHROPIC_API_KEY` environment variable before using this feature. Puzzle generation uses the `claude-3-5-haiku-20241022` model.
 
 ## Running Tests
 
@@ -139,6 +167,7 @@ python manage.py test escape
 ## Technologies Used
 
 - **Backend**: Django 5.2, Python
+- **AI**: Anthropic API (`claude-3-5-haiku-20241022`) for puzzle generation
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Styling**: Custom terminal-themed CSS with animations
 - **Deployment**: GitHub Pages (demo), Gunicorn + WhiteNoise (full app)
