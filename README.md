@@ -65,18 +65,26 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
    python manage.py migrate
    ```
 
-5. **Load sample rooms**
+5. **Create a superuser (admin)**
+   ```bash
+   python manage.py createsuperuser
+   ```
+   You'll be prompted to enter a username, email, and password. This account provides access to the Django admin panel at `/admin/`.
+
+6. **Load sample rooms**
    ```bash
    python manage.py loaddata escape_rooms.json
    ```
 
-6. **Start the server**
+7. **Start the server**
    ```bash
    python manage.py runserver
    ```
 
-7. **Open your browser**
+8. **Open your browser**
    Navigate to `http://localhost:8000` and start playing
+   - Play the game: `http://localhost:8000/play/`
+   - Admin panel: `http://localhost:8000/admin/` (use superuser credentials)
 
 ### Environment Variables
 
