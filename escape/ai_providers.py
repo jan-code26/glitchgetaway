@@ -51,7 +51,26 @@ class BasePuzzleGenerator(ABC):
         custom_prompt: Optional[str] = None
     ) -> str:
         """Build the prompt for the AI."""
+        # JSON format requirement (always appended)
+        json_format = """
+Return your response as a JSON array with this exact structure:
+[
+  {
+    "title": "Puzzle Title (max 100 chars)",
+    "description": "Engaging narrative description of the scenario",
+    "puzzle_question": "The actual question or challenge",
+    "puzzle_answer": "The primary correct answer",
+    "alternate_answers": "comma,separated,alternates or empty string",
+    "hint": "A helpful hint"
+  }
+]
+
+Return ONLY the JSON array, no other text or explanations."""
+        
         if custom_prompt:
+            # Ensure custom prompts also request JSON format
+            if 'json' not in custom_prompt.lower():
+                return f"{custom_prompt}\n\n{json_format}"
             return custom_prompt
         
         topic_text = f" about {topic}" if topic else " about web development, programming, or technology"
@@ -65,24 +84,24 @@ Each puzzle should:
 - Have a helpful hint that guides without giving away the answer
 - Be engaging and educational
 
-Return your response as a JSON array with this exact structure:
-[
-  {{
-    "title": "Puzzle Title (max 100 chars)",
-    "description": "Engaging narrative description of the scenario",
-    "puzzle_question": "The actual question or challenge",
-    "puzzle_answer": "The primary correct answer",
-    "alternate_answers": "comma,separated,alternates or empty string",
-    "hint": "A helpful hint"
-  }}
-]
-
-Return ONLY the JSON array, no other text."""
+{json_format}"""
     
     def _parse_response(self, response_text: str) -> List[Dict]:
         """Parse the AI response into puzzle dictionaries."""
         # Try to extract JSON from the response
         response_text = response_text.strip()
+        
+        # Try to extract from markdown code blocks first
+        if '```json' in response_text:
+            start = response_text.find('```json') + 7
+            end = response_text.find('```', start)
+            if end != -1:
+                response_text = response_text[start:end].strip()
+        elif '```' in response_text:
+            start = response_text.find('```') + 3
+            end = response_text.find('```', start)
+            if end != -1:
+                response_text = response_text[start:end].strip()
         
         # Look for JSON array markers
         start = response_text.find('[')
@@ -111,9 +130,13 @@ Return ONLY the JSON array, no other text."""
                 
                 return validated_puzzles
             except json.JSONDecodeError as e:
-                raise ValueError(f"Failed to parse AI response as JSON: {e}")
+                # Show a preview of what failed to parse
+                preview = json_text[:200] + "..." if len(json_text) > 200 else json_text
+                raise ValueError(f"Failed to parse AI response as JSON: {e}\n\nReceived: {preview}")
         
-        raise ValueError("No JSON array found in AI response")
+        # Show a preview of the response for debugging
+        preview = response_text[:500] + "..." if len(response_text) > 500 else response_text
+        raise ValueError(f"No JSON array found in AI response.\n\nReceived: {preview}")
 
 
 class AnthropicProvider(BasePuzzleGenerator):

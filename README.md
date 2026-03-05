@@ -217,6 +217,25 @@ The UI auto-approves successful generated puzzles directly into live `Room` entr
   - Skipped
 - Expandable details panel for skipped/error reasons
 
+### Error Handling & Troubleshooting
+
+**Enhanced JSON Parsing** (March 2026)
+
+The AI puzzle generation now includes robust error handling for response parsing:
+
+- **Markdown Code Block Support**: Automatically extracts JSON from responses wrapped in ````json` code blocks
+- **Flexible Format Detection**: Handles AI responses that include explanatory text before/after the JSON
+- **Custom Prompt Protection**: Automatically appends JSON format instructions to custom prompts if not already present
+- **Detailed Error Messages**: Shows a preview of the actual AI response when parsing fails, making debugging easier
+
+**Common Issues:**
+
+- **"No JSON array found"**: Previous versions couldn't handle markdown-wrapped responses. Now automatically extracts JSON from code blocks.
+- **Custom prompts failing**: Custom prompts now automatically get JSON format requirements added unless they already mention "json".
+- **AI adding explanations**: The parser now strips explanatory text and finds the JSON array anywhere in the response.
+
+If generation still fails, check the error message preview to see exactly what the AI returned.
+
 ## Running Tests
 
 ```bash
