@@ -30,6 +30,7 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
 
 - **Multiple Programming Languages**: Learn HTML, CSS, JavaScript, Python, and more
 - **Interactive Puzzles**: Solve real coding challenges in a fun, engaging format
+- **AI-Powered Puzzle Generation**: Auto-generate puzzles using Anthropic Claude, OpenAI GPT, or Google Gemini
 - **User Accounts**: Register and login to track your scores persistently
 - **Live Game Timer**: Elapsed time counter ticks in real time during gameplay
 - **Competitive Leaderboard**: Top-10 completions ranked by speed and accuracy
@@ -85,6 +86,10 @@ portfolio/              ← GitHub Pages demo & portfolio site (not part of the 
 | `DEBUG` | `True` | Set to `False` in production |
 | `ALLOWED_HOSTS` | `*` | Comma-separated list of allowed hostnames |
 | `ADMIN_PASSWORD` | `admin123` | Game admin terminal password — **always change in production** |
+| `AI_PROVIDER` | auto-detect | AI provider for puzzle generation: `anthropic`, `openai`, or `gemini` |
+| `ANTHROPIC_API_KEY` | — | API key for Anthropic Claude (optional, for AI puzzle generation) |
+| `OPENAI_API_KEY` | — | API key for OpenAI GPT (optional, for AI puzzle generation) |
+| `GOOGLE_API_KEY` | — | API key for Google Gemini (optional, for AI puzzle generation) |
 
 Example `.env` (not committed; load with your preferred tool or export manually):
 ```
@@ -92,6 +97,7 @@ SECRET_KEY=your-production-secret-key
 DEBUG=False
 ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 ADMIN_PASSWORD=your-secure-admin-password
+ANTHROPIC_API_KEY=your-anthropic-key
 ```
 
 ### Production (Gunicorn + WhiteNoise)
@@ -130,6 +136,50 @@ Available admin commands:
 - `upload_rooms` - Bulk upload rooms via JSON
 - `logout` - Exit admin mode
 
+## AI-Powered Puzzle Generation
+
+GlitchGetaway can automatically generate new puzzles using AI. Supports **Anthropic Claude**, **OpenAI GPT**, and **Google Gemini**.
+
+### Setup
+
+1. Install AI dependencies (already in requirements.txt):
+   ```bash
+   pip install anthropic openai google-generativeai python-dotenv
+   ```
+
+2. Set your API key as an environment variable:
+   ```bash
+   export ANTHROPIC_API_KEY="your-api-key"
+   # OR
+   export OPENAI_API_KEY="your-api-key"
+   # OR
+   export GOOGLE_API_KEY="your-api-key"
+   ```
+
+3. (Optional) Specify which provider to use:
+   ```bash
+   export AI_PROVIDER="anthropic"  # or "openai" or "gemini"
+   ```
+
+### Generate Puzzles
+
+Generate puzzles by topic:
+```bash
+python manage.py generate_puzzles --topic "CSS" --count 5
+```
+
+Generate with custom prompt:
+```bash
+python manage.py generate_puzzles --prompt "Create puzzles about Python list comprehensions"
+```
+
+Specify a provider:
+```bash
+python manage.py generate_puzzles --topic "JavaScript" --count 3 --provider anthropic
+```
+
+Generated puzzles are saved to the database as `GeneratedPuzzle` objects with a "Pending Review" status. Review them in the Django admin panel (`/admin/`) before approving them as actual game rooms.
+
 ## Running Tests
 
 ```bash
@@ -138,8 +188,9 @@ python manage.py test escape
 
 ## Technologies Used
 
-- **Backend**: Django 5.2, Python
+- **Backend**: Django 5.2, Python 3.8+
 - **Frontend**: HTML5, CSS3, JavaScript
+- **AI Integration**: Anthropic Claude, OpenAI GPT, Google Gemini (for puzzle generation)
 - **Styling**: Custom terminal-themed CSS with animations
 - **Deployment**: GitHub Pages (demo), Gunicorn + WhiteNoise (full app)
 
