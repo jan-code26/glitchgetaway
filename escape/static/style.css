@@ -220,3 +220,99 @@ pre.flicker.error {
 .header-link:hover {
     text-decoration: underline;
 }
+
+.terminal-banner {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.terminal-banner-success {
+    box-shadow: 0 0 6px var(--border-color);
+}
+
+.summary-card {
+    margin-top: 14px;
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.summary-title {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.summary-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.metric-chip {
+    border: 1px solid var(--border-color);
+    padding: 6px;
+}
+
+.metric-label {
+    display: block;
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.metric-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.metric-chip-success {
+    box-shadow: 0 0 6px rgba(0, 255, 0, 0.25);
+}
+
+.metric-chip-info {
+    box-shadow: 0 0 6px rgba(0, 160, 255, 0.25);
+}
+
+.metric-chip-warning {
+    box-shadow: 0 0 6px rgba(255, 176, 0, 0.25);
+}
+
+.summary-line {
+    margin: 4px 0;
+}
+
+.summary-details {
+    margin: 10px 0;
+    border: 1px solid var(--border-color);
+    padding: 8px;
+}
+
+.summary-details summary {
+    cursor: pointer;
+}
+
+.summary-details ol {
+    margin: 8px 0 0 20px;
+    padding: 0;
+}
+
+.action-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+@media screen and (max-width: 768px) {
+    .summary-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .action-row {
+        flex-direction: column;
+    }
+}

@@ -8,8 +8,10 @@ Usage:
 """
 
 from django.core.management.base import BaseCommand, CommandError
-from escape.models import GeneratedPuzzle
-from escape.ai_providers import get_provider
+from escape.services.puzzle_generation import (
+    build_generation_context,
+    generate_and_store_puzzles,
+)
 
 
 class Command(BaseCommand):
@@ -49,64 +51,36 @@ class Command(BaseCommand):
         if count < 1 or count > 20:
             raise CommandError('Count must be between 1 and 20')
 
-        # Build generation context for display
-        if custom_prompt:
-            context = f"custom prompt (generating {count} puzzle{'s' if count != 1 else ''})"
-            generation_prompt = custom_prompt
-        elif topic:
-            context = f"topic: {topic} ({count} puzzle{'s' if count != 1 else ''})"
-            generation_prompt = f"Topic: {topic}, Count: {count}"
-        else:
-            context = f"general tech/programming ({count} puzzle{'s' if count != 1 else ''})"
-            generation_prompt = f"General tech/programming, Count: {count}"
+        context, _ = build_generation_context(
+            topic=topic,
+            count=count,
+            custom_prompt=custom_prompt,
+        )
 
         self.stdout.write(f"Generating puzzles with {context}...")
 
-        # Get provider
-        try:
-            provider = get_provider(provider_name)
-            provider_type = provider.__class__.__name__.replace('Provider', '')
-            self.stdout.write(f"Using provider: {provider_type}")
-        except ValueError as e:
-            raise CommandError(str(e))
-        except ImportError as e:
-            raise CommandError(f"Provider dependency error: {e}")
-
-        # Generate puzzles
+        # Generate and save via shared service
         try:
             self.stdout.write("Calling AI API...")
-            puzzles = provider.generate_puzzles(
+            result = generate_and_store_puzzles(
                 topic=topic,
                 count=count,
-                custom_prompt=custom_prompt
+                custom_prompt=custom_prompt,
+                provider_name=provider_name,
+                auto_approve=False,
             )
+            self.stdout.write(f"Using provider: {result['provider_type']}")
+            self.stdout.write(
+                f"Saving {result['generated_count']} puzzle{'s' if result['generated_count'] != 1 else ''} to database..."
+            )
+        except (ValueError, ImportError) as e:
+            raise CommandError(str(e))
         except Exception as e:
             raise CommandError(f"Failed to generate puzzles: {e}")
 
-        if not puzzles:
-            raise CommandError("No puzzles were generated")
-
-        # Save to database
-        self.stdout.write(f"Saving {len(puzzles)} puzzle{'s' if len(puzzles) != 1 else ''} to database...")
-        created_count = 0
-        
-        for puzzle_data in puzzles:
-            try:
-                GeneratedPuzzle.objects.create(
-                    title=puzzle_data['title'],
-                    description=puzzle_data['description'],
-                    puzzle_question=puzzle_data['puzzle_question'],
-                    puzzle_answer=puzzle_data['puzzle_answer'],
-                    alternate_answers=puzzle_data.get('alternate_answers', ''),
-                    hint=puzzle_data.get('hint', 'No hint available.'),
-                    generation_prompt=generation_prompt,
-                    status=GeneratedPuzzle.STATUS_PENDING,
-                )
-                created_count += 1
-            except Exception as e:
-                self.stdout.write(
-                    self.style.WARNING(f"Skipped invalid puzzle: {e}")
-                )
+        created_count = result['created_count']
+        for error in result['errors']:
+            self.stdout.write(self.style.WARNING(f"Skipped invalid puzzle: {error}"))
 
         # Report results
         if created_count == 0:

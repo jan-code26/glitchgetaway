@@ -10,6 +10,10 @@ from django.utils import timezone
 import json
 
 from .models import GameSession, Room
+from .services.puzzle_generation import (
+    build_generation_context,
+    generate_and_store_puzzles,
+)
 
 
 def _leaderboard_qs():
@@ -227,12 +231,18 @@ def admin_terminal(request):
         elif cmd == 'upload_rooms':
             return redirect('admin_upload_rooms')
 
+        elif cmd == 'generate_puzzles':
+            return redirect('admin_generate_puzzles')
+
         elif cmd == 'logout':
             request.session['is_admin'] = False
             return redirect('home')
 
         else:
-            output = "Unknown command. Try: list_rooms, add_room, delete_room <id>, upload_rooms, logout"
+            output = (
+                "Unknown command. Try: list_rooms, add_room, delete_room <id>, "
+                "upload_rooms, generate_puzzles, logout"
+            )
 
     return render(request, 'escape/admin_terminal.html', {'output': output})
 
@@ -282,4 +292,116 @@ def admin_upload_rooms(request):
             messages.error(request, f"Upload failed: {e}")
 
     return render(request, 'escape/admin_upload_rooms.html')
+
+
+def admin_generate_puzzles(request):
+    if not request.session.get('is_admin'):
+        return redirect('admin_terminal')
+
+    output_lines = []
+    duplicate_skipped_count = 0
+    generation_summary = None
+    generation_errors = []
+    provider_choices = ['anthropic', 'openai', 'gemini']
+    form_values = {
+        'topic': '',
+        'count': '5',
+        'provider': '',
+        'prompt': '',
+        'confirm_live_publish': False,
+    }
+
+    if request.method == 'POST':
+        topic = request.POST.get('topic', '').strip() or None
+        custom_prompt = request.POST.get('prompt', '').strip() or None
+        provider_name = request.POST.get('provider', '').strip().lower() or None
+        count_value = request.POST.get('count', '5').strip()
+        confirm_live_publish = request.POST.get('confirm_live_publish') == 'on'
+
+        form_values.update({
+            'topic': topic or '',
+            'count': count_value,
+            'provider': provider_name or '',
+            'prompt': custom_prompt or '',
+            'confirm_live_publish': confirm_live_publish,
+        })
+
+        try:
+            count = int(count_value)
+        except ValueError:
+            count = -1
+
+        if provider_name and provider_name not in provider_choices:
+            output_lines.append('[[ ERROR ]] Invalid provider selection.')
+        elif not confirm_live_publish:
+            output_lines.append(
+                '[[ ERROR ]] Confirm live publish before generating auto-approved puzzles.'
+            )
+        elif count < 1 or count > 20:
+            output_lines.append('[[ ERROR ]] Count must be between 1 and 20.')
+        else:
+            context, _ = build_generation_context(
+                topic=topic,
+                count=count,
+                custom_prompt=custom_prompt,
+            )
+            output_lines.append(f'[[ INFO ]] Generating puzzles with {context}...')
+            output_lines.append('[[ INFO ]] Auto-approval is enabled for UI generation.')
+
+            try:
+                result = generate_and_store_puzzles(
+                    topic=topic,
+                    count=count,
+                    custom_prompt=custom_prompt,
+                    provider_name=provider_name,
+                    auto_approve=True,
+                    approved_by=request.user if request.user.is_authenticated else None,
+                )
+                output_lines.append(f"[[ SUCCESS ]] Provider: {result['provider_type']}")
+                output_lines.append(
+                    (
+                        '[[ SUCCESS ]] Created '
+                        f"{result['created_count']} and auto-approved {result['approved_count']} puzzle"
+                        f"{'s' if result['approved_count'] != 1 else ''}."
+                    )
+                )
+                duplicate_skipped_count = result.get('duplicate_skipped_count', 0)
+                if duplicate_skipped_count:
+                    output_lines.append(
+                        f"[[ INFO ]] Prevented {duplicate_skipped_count} duplicate live publish"
+                        f"{'es' if duplicate_skipped_count != 1 else ''}."
+                    )
+                if result['skipped_count']:
+                    output_lines.append(
+                        f"[[ WARNING ]] Skipped {result['skipped_count']} invalid puzzle"
+                        f"{'s' if result['skipped_count'] != 1 else ''}."
+                    )
+                    for err in result['errors']:
+                        output_lines.append(f' - {err}')
+
+                generation_summary = {
+                    'provider_type': result.get('provider_type', 'Unknown'),
+                    'generated_count': result.get('generated_count', 0),
+                    'approved_count': result.get('approved_count', 0),
+                    'duplicate_skipped_count': duplicate_skipped_count,
+                    'skipped_count': result.get('skipped_count', 0),
+                }
+                generation_errors = result.get('errors', [])
+            except (ValueError, ImportError) as exc:
+                output_lines.append(f'[[ ERROR ]] {exc}')
+            except Exception as exc:
+                output_lines.append(f'[[ ERROR ]] Failed to generate puzzles: {exc}')
+
+    return render(
+        request,
+        'escape/admin_generate_puzzles.html',
+        {
+            'output': '\n'.join(output_lines),
+            'duplicate_skipped_count': duplicate_skipped_count,
+            'generation_summary': generation_summary,
+            'generation_errors': generation_errors,
+            'provider_choices': provider_choices,
+            'form_values': form_values,
+        },
+    )
 

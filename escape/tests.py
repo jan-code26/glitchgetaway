@@ -2,8 +2,13 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.management import call_command
 
-from .models import GameSession, Room
+from io import StringIO
+from unittest.mock import patch
+
+from .models import GameSession, GeneratedPuzzle, Room
+from .services.puzzle_generation import generate_and_store_puzzles
 
 
 class SmokeTests(TestCase):
@@ -287,4 +292,202 @@ class LeaderboardTests(TestCase):
         response = self.client.get(reverse("success"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "rank")
+
+
+class PuzzleGenerationServiceTests(TestCase):
+    def _mock_puzzles(self):
+        return [{
+            'title': 'Binary Search Gate',
+            'description': 'Find the missing midpoint token.',
+            'puzzle_question': 'What is the midpoint index for 0..8?',
+            'puzzle_answer': '4',
+            'alternate_answers': 'four',
+            'hint': 'Use integer division.',
+        }]
+
+    @patch('escape.services.puzzle_generation.get_provider')
+    def test_generate_and_store_auto_approves_to_room(self, mock_get_provider):
+        class FakeProvider:
+            def generate_puzzles(self, topic=None, count=5, custom_prompt=None):
+                return self._puzzles
+
+        fake_provider = FakeProvider()
+        fake_provider._puzzles = self._mock_puzzles()
+        mock_get_provider.return_value = fake_provider
+
+        result = generate_and_store_puzzles(
+            topic='algorithms',
+            count=1,
+            auto_approve=True,
+        )
+
+        self.assertEqual(result['created_count'], 1)
+        self.assertEqual(result['approved_count'], 1)
+        self.assertEqual(result['duplicate_skipped_count'], 0)
+        self.assertEqual(Room.objects.count(), 1)
+        self.assertEqual(GeneratedPuzzle.objects.count(), 1)
+        self.assertEqual(
+            GeneratedPuzzle.objects.first().status,
+            GeneratedPuzzle.STATUS_APPROVED,
+        )
+
+    @patch('escape.services.puzzle_generation.get_provider')
+    def test_generate_and_store_skips_invalid_payload(self, mock_get_provider):
+        class FakeProvider:
+            def generate_puzzles(self, topic=None, count=5, custom_prompt=None):
+                return [{'title': 'Missing required keys'}]
+
+        mock_get_provider.return_value = FakeProvider()
+        result = generate_and_store_puzzles(count=1)
+
+        self.assertEqual(result['created_count'], 0)
+        self.assertEqual(result['skipped_count'], 1)
+        self.assertEqual(result['duplicate_skipped_count'], 0)
+        self.assertEqual(GeneratedPuzzle.objects.count(), 0)
+
+    @patch('escape.services.puzzle_generation.get_provider')
+    def test_generate_and_store_prevents_duplicate_room_on_auto_approve(self, mock_get_provider):
+        class FakeProvider:
+            def generate_puzzles(self, topic=None, count=5, custom_prompt=None):
+                return [{
+                    'title': 'Binary Search Gate',
+                    'description': 'Find the missing midpoint token.',
+                    'puzzle_question': 'What is the midpoint index for 0..8?',
+                    'puzzle_answer': '4',
+                    'alternate_answers': 'four',
+                    'hint': 'Use integer division.',
+                }]
+
+        Room.objects.create(
+            order=1,
+            title='Binary Search Gate',
+            description='Existing room',
+            puzzle_question='What is the midpoint index for 0..8?',
+            puzzle_answer='4',
+        )
+        mock_get_provider.return_value = FakeProvider()
+
+        result = generate_and_store_puzzles(count=1, auto_approve=True)
+
+        self.assertEqual(result['created_count'], 0)
+        self.assertEqual(result['approved_count'], 0)
+        self.assertEqual(result['skipped_count'], 1)
+        self.assertEqual(result['duplicate_skipped_count'], 1)
+        self.assertIn('duplicate live room exists', result['errors'][0])
+        self.assertEqual(Room.objects.count(), 1)
+        self.assertEqual(GeneratedPuzzle.objects.count(), 0)
+
+
+class AdminGeneratePuzzlesViewTests(TestCase):
+    def test_admin_generate_redirects_without_session(self):
+        response = self.client.get(reverse('admin_generate_puzzles'))
+        self.assertRedirects(response, reverse('admin_terminal'), fetch_redirect_response=False)
+
+    def test_admin_generate_page_loads_with_admin_session(self):
+        session = self.client.session
+        session['is_admin'] = True
+        session.save()
+
+        response = self.client.get(reverse('admin_generate_puzzles'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Generate AI Puzzles')
+
+    @patch('escape.views.generate_and_store_puzzles')
+    def test_admin_generate_posts_with_auto_approve(self, mock_generate):
+        session = self.client.session
+        session['is_admin'] = True
+        session.save()
+
+        mock_generate.return_value = {
+            'provider_type': 'OpenAI',
+            'generated_count': 1,
+            'created_count': 1,
+            'approved_count': 1,
+            'skipped_count': 0,
+            'duplicate_skipped_count': 0,
+            'errors': [],
+        }
+
+        response = self.client.post(reverse('admin_generate_puzzles'), {
+            'topic': 'css',
+            'count': '1',
+            'provider': 'openai',
+            'prompt': '',
+            'confirm_live_publish': 'on',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'auto-approved 1 puzzle')
+        self.assertContains(response, '[[ GENERATION SUMMARY ]]')
+        self.assertContains(response, 'Completed with no issues.')
+        self.assertContains(response, 'Review Generated Puzzles')
+        mock_generate.assert_called_once()
+        self.assertTrue(mock_generate.call_args.kwargs['auto_approve'])
+
+    @patch('escape.views.generate_and_store_puzzles')
+    def test_admin_generate_shows_duplicate_prevention_banner(self, mock_generate):
+        session = self.client.session
+        session['is_admin'] = True
+        session.save()
+
+        mock_generate.return_value = {
+            'provider_type': 'OpenAI',
+            'generated_count': 2,
+            'created_count': 1,
+            'approved_count': 1,
+            'skipped_count': 1,
+            'duplicate_skipped_count': 1,
+            'errors': ['Puzzle #2: duplicate live room exists for this title/question'],
+        }
+
+        response = self.client.post(reverse('admin_generate_puzzles'), {
+            'topic': 'css',
+            'count': '2',
+            'provider': 'openai',
+            'prompt': '',
+            'confirm_live_publish': 'on',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Prevented 1 duplicate live publish.')
+        self.assertContains(response, 'Completed with warnings. Review details below.')
+        self.assertContains(response, 'Show Details')
+        self.assertContains(response, 'duplicate live room exists for this title/question')
+
+    @patch('escape.views.generate_and_store_puzzles')
+    def test_admin_generate_requires_publish_confirmation(self, mock_generate):
+        session = self.client.session
+        session['is_admin'] = True
+        session.save()
+
+        response = self.client.post(reverse('admin_generate_puzzles'), {
+            'topic': 'css',
+            'count': '1',
+            'provider': 'openai',
+            'prompt': '',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Confirm live publish before generating auto-approved puzzles.')
+        mock_generate.assert_not_called()
+
+
+class GeneratePuzzlesCommandTests(TestCase):
+    @patch('escape.management.commands.generate_puzzles.generate_and_store_puzzles')
+    def test_command_uses_shared_service(self, mock_generate):
+        mock_generate.return_value = {
+            'provider_type': 'Anthropic',
+            'generated_count': 1,
+            'created_count': 1,
+            'approved_count': 0,
+            'skipped_count': 0,
+            'errors': [],
+        }
+
+        out = StringIO()
+        call_command('generate_puzzles', topic='http', count=1, stdout=out)
+
+        self.assertIn('Successfully generated 1 puzzle', out.getvalue())
+        mock_generate.assert_called_once()
+        self.assertFalse(mock_generate.call_args.kwargs['auto_approve'])
 

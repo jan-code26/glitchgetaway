@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generate AI Puzzles - Glitch Getaway</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="terminal">
+<button id="theme-switcher"
+        style="position: fixed; top: 10px; right: 10px; padding: 5px 10px; cursor: pointer;">
+    Switch Theme
+</button>
+
+<div class="terminal-screen">
+    <div class="terminal-header">
+        <p>GlitchGetaway Admin - Generate AI Puzzles</p>
+    </div>
+    <div class="terminal-body">
+        <pre class="flicker">[[ INFO ]] Generated puzzles are auto-approved and published live immediately.</pre>
+        <pre class="flicker">[[ INFO ]] Leave provider blank to auto-detect via configured API keys.</pre>
+
+        <form method="POST" id="generate-form">
+            {% csrf_token %}
+            <pre>> Topic (optional): <input type="text" name="topic" class="terminal-input" placeholder="CSS, Python, APIs" value="{{ form_values.topic }}"></pre>
+            <pre>> Count (1-20): <input type="number" name="count" class="terminal-input" value="{{ form_values.count }}" min="1" max="20" required></pre>
+            <pre>> Provider (optional):
+<select name="provider" class="terminal-input" style="border: 1px solid var(--border-color); width: 220px;">
+    <option value="">auto-detect</option>
+    {% for provider in provider_choices %}
+        <option value="{{ provider }}" {% if form_values.provider == provider %}selected{% endif %}>{{ provider }}</option>
+    {% endfor %}
+</select>
+            </pre>
+            <pre>> Custom Prompt (optional):</pre>
+            <textarea name="prompt" class="terminal-input" rows="6" style="width:100%; border: 1px solid var(--border-color);">{{ form_values.prompt }}</textarea>
+            <pre>
+<label>
+    <input type="checkbox" name="confirm_live_publish" {% if form_values.confirm_live_publish %}checked{% endif %} required>
+    I understand this will publish generated puzzles live immediately.
+</label>
+            </pre>
+            <br>
+            <button type="submit" class="terminal-button">Generate + Auto-Approve</button>
+            <a href="{% url 'admin_terminal' %}" class="terminal-button" style="text-decoration:none; display:inline-block;">Back To Terminal</a>
+        </form>
+
+        {% if generation_summary %}
+            <section class="summary-card" id="generation-summary">
+                <h3 class="summary-title">[[ GENERATION SUMMARY ]]</h3>
+                <div class="summary-metrics">
+                    <div class="metric-chip">
+                        <span class="metric-label">Generated</span>
+                        <span class="metric-value">{{ generation_summary.generated_count }}</span>
+                    </div>
+                    <div class="metric-chip metric-chip-success">
+                        <span class="metric-label">Published</span>
+                        <span class="metric-value">{{ generation_summary.approved_count }}</span>
+                    </div>
+                    <div class="metric-chip metric-chip-info">
+                        <span class="metric-label">Duplicates Prevented</span>
+                        <span class="metric-value">{{ generation_summary.duplicate_skipped_count }}</span>
+                    </div>
+                    <div class="metric-chip metric-chip-warning">
+                        <span class="metric-label">Skipped</span>
+                        <span class="metric-value">{{ generation_summary.skipped_count }}</span>
+                    </div>
+                </div>
+                <p class="summary-line">Provider: {{ generation_summary.provider_type }}</p>
+                {% if generation_summary.skipped_count %}
+                    <p class="summary-line">Completed with warnings. Review details below.</p>
+                {% else %}
+                    <p class="summary-line">Completed with no issues.</p>
+                {% endif %}
+            </section>
+        {% endif %}
+
+        {% if duplicate_skipped_count %}
+            <div class="terminal-banner terminal-banner-success">
+                Prevented {{ duplicate_skipped_count }} duplicate live publish{{ duplicate_skipped_count|pluralize }}.
+            </div>
+        {% endif %}
+
+        {% if generation_errors %}
+            <details class="summary-details">
+                <summary>Show Details</summary>
+                <ol>
+                    {% for err in generation_errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ol>
+            </details>
+        {% endif %}
+
+        {% if generation_summary %}
+            <div class="action-row">
+                <a href="#generate-form" class="terminal-button" style="text-decoration:none; display:inline-block;">Generate Again</a>
+                <a href="{% url 'admin_terminal' %}" class="terminal-button" style="text-decoration:none; display:inline-block;">Back To Terminal</a>
+                <a href="/admin/escape/generatedpuzzle/" class="terminal-button" style="text-decoration:none; display:inline-block;">Review Generated Puzzles</a>
+            </div>
+        {% endif %}
+
+        {% if output %}
+            <pre class="flicker">{{ output }}</pre>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const body = document.querySelector('body');
+        let theme = localStorage.getItem('theme');
+
+        if (!theme) {
+            const hr = new Date().getHours();
+            theme = (hr >= 7 && hr <= 19) ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+        }
+
+        applyTheme(theme);
+
+        const switcher = document.getElementById('theme-switcher');
+        let darkMode = (theme === 'dark');
+
+        switcher.addEventListener('click', () => {
+            darkMode = !darkMode;
+            theme = darkMode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        });
+
+        function applyTheme(currentTheme) {
+            const styles = {
+                light: { bg: 'white', text: 'black', border: 'black', header: 'white' },
+                dark: { bg: 'black', text: '#00FF00', border: '#00FF00', header: 'black' }
+            };
+            const selected = styles[currentTheme];
+            body.style.setProperty('--background-color', selected.bg);
+            body.style.setProperty('--text-color', selected.text);
+            body.style.setProperty('--border-color', selected.border);
+            body.style.setProperty('--header-text-color', selected.header);
+        }
+    });
+</script>
+</body>
+</html>

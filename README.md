@@ -142,7 +142,12 @@ Available admin commands:
 - `add_room` - Add a new puzzle room
 - `delete_room <id>` - Remove a room
 - `upload_rooms` - Bulk upload rooms via JSON
+- `generate_puzzles` - Open the AI generation UI
 - `logout` - Exit admin mode
+
+Admin UI routes:
+- Admin terminal: `http://localhost:8000/play/admin-terminal/`
+- AI generation UI: `http://localhost:8000/play/admin-generate-puzzles/`
 
 ## AI-Powered Puzzle Generation
 
@@ -171,6 +176,8 @@ GlitchGetaway can automatically generate new puzzles using AI. Supports **Anthro
 
 ### Generate Puzzles
 
+#### Option A: Terminal command
+
 Generate puzzles by topic:
 ```bash
 python manage.py generate_puzzles --topic "CSS" --count 5
@@ -186,7 +193,29 @@ Specify a provider:
 python manage.py generate_puzzles --topic "JavaScript" --count 3 --provider anthropic
 ```
 
-Generated puzzles are saved to the database as `GeneratedPuzzle` objects with a "Pending Review" status. Review them in the Django admin panel (`/admin/`) before approving them as actual game rooms.
+This command stores generated entries as `GeneratedPuzzle` objects with `Pending Review` status for approval in `/admin/escape/generatedpuzzle/`.
+
+#### Option B: Admin UI (auto-publish flow)
+
+1. Enter admin mode in the game terminal: `sudo login <ADMIN_PASSWORD>`
+2. Open AI generation UI with `generate_puzzles` command (or visit `/play/admin-generate-puzzles/`)
+3. Fill in topic/count/provider/prompt
+4. Check the required confirmation checkbox for live publishing
+5. Submit `Generate + Auto-Approve`
+
+The UI auto-approves successful generated puzzles directly into live `Room` entries.
+
+#### UI Safety and Visibility
+
+- Required explicit publish confirmation checkbox before submission
+- Duplicate-room prevention in auto-approve flow (same title + question is blocked)
+- Duplicate prevention banner when duplicates are skipped
+- Generation summary card with counts:
+  - Generated
+  - Published
+  - Duplicates Prevented
+  - Skipped
+- Expandable details panel for skipped/error reasons
 
 ## Running Tests
 
