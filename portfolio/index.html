@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jahnavi Patel — Software Developer</title>
-  <meta name="description" content="Full-stack software developer. Django, React, Spring Boot, Angular. Based in Boston, MA. Available May 2026." />
+  <meta name="description" content="Full-stack software developer. Django, React, Spring Boot, Angular. Based in Boston, MA. Available now." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -254,10 +254,10 @@
   <div class="wrap">
     <div class="hero-grid">
       <div class="hero-left">
-        <div class="badge fade"><span class="badge-dot"></span>Available for work · May 2026</div>
+        <div class="badge fade"><span class="badge-dot"></span>Available for work · Now</div>
         <h1 class="fade" style="transition-delay:.08s">Jahnavi<br><span class="dim">Patel.</span></h1>
         <p class="hero-bio fade" style="transition-delay:.14s">
-          Full-stack developer who has shipped <strong>production systems at two startups</strong> — a sensor data platform in Django + React and an HR platform in Spring Boot + Angular. 1.5 years of real-world experience. MS Information Systems at Northeastern, May 2026.
+          Full-stack developer who has shipped <strong>production systems at two startups</strong> — a sensor data platform in Django + React and an HR platform in Spring Boot + Angular. 1.5 years of real-world experience. MS Information Systems, Northeastern, April 2026.
         </p>
         <div class="hero-tags fade" style="transition-delay:.19s">
           <span class="tag">Python · Django</span>
@@ -296,19 +296,19 @@
     <div class="about-grid">
       <div class="about-text fade">
         <p>I'm a developer who genuinely likes the full stack — not because it's trendy, but because I've actually shipped both sides of it. At <strong>Xroadz</strong>, I built the API layer and the React dashboard that consumes it. At <strong>Kodem Legal Technology</strong>, I designed Spring Boot microservices and the Angular frontend sitting on top of them. That end-to-end view changes how you think about problems.</p>
-        <p>Before my MS at Northeastern, I studied information technology at JNTU in Hyderabad, India. I moved to Boston in early 2024 and haven't stopped building since — currently juggling coursework, a co-op, and keeping <a href="https://glitchgetaway.me">Glitch Getaway</a> alive.</p>
-        <p>Looking for a <strong>software engineer role starting May 2026</strong> — full-stack, backend, or anywhere in between. Startups particularly welcome.</p>
+        <p>Before my MS at Northeastern, I studied information technology at JNTU in Hyderabad, India. I moved to Boston in early 2024 and graduated in April 2026 — two startups and several shipped projects later.</p>
+        <p>Looking for a <strong>software engineer role</strong> — full-stack, backend, or anywhere in between.</p>
       </div>
       <div class="about-facts fade" style="transition-delay:.1s">
         <div class="fact">
-          <div class="fact-label">Currently</div>
-          <div class="fact-value">Software Developer Co-op</div>
-          <div class="fact-sub">Xroadz Inc. · Boston, MA</div>
+          <div class="fact-label">Seeking</div>
+          <div class="fact-value">Software Engineer Role</div>
+          <div class="fact-sub">Available from July 1, 2026</div>
         </div>
         <div class="fact">
           <div class="fact-label">Education</div>
           <div class="fact-value">MS Information Systems</div>
-          <div class="fact-sub">Northeastern · GPA 3.71 · May 2026</div>
+          <div class="fact-sub">Northeastern · GPA 3.71 · April 2026</div>
         </div>
         <div class="fact">
           <div class="fact-label">Production experience</div>
@@ -335,8 +335,8 @@
       <div class="exp-item fade">
         <div class="exp-meta">
           <div class="exp-company">Xroadz Inc.</div>
-          <div class="exp-period">Jul 2025 — Present</div>
-          <span class="exp-badge">Current · Co-op</span>
+          <div class="exp-period">Jul 2025 — Dec 2025</div>
+          <span class="exp-badge">Co-op</span>
         </div>
         <div>
           <div class="exp-role">Software Developer Co-op — Full Stack</div>
@@ -389,6 +389,40 @@
     <div class="sec-label fade">// projects</div>
     <h2 class="fade">Things I've built.</h2>
     <p class="sec-sub fade">Production deployments and personal experiments. Quality over quantity.</p>
+
+    <div class="project-anchor fade">
+      <div class="anchor-top">
+        <div class="anchor-left">
+          <div class="project-kicker">Live · Web App · Python / TypeScript</div>
+          <div class="project-name">Don't Trust the Sensors</div>
+          <p class="project-desc">Regime-aware anomaly triage system for industrial IoT sensor streams. 7-node LangGraph agent pipeline with physics-based sensor validation and causal inference, evaluated on NASA's CMAPSS turbofan benchmark across 4 sub-datasets.</p>
+          <div class="project-links">
+            <a href="https://iot-anomaly-triage.onrender.com" target="_blank" class="plink">↗ Live demo</a>
+            <a href="https://github.com/jan-code26/iot-anomaly-triage" target="_blank" class="plink">↗ GitHub</a>
+          </div>
+        </div>
+        <div class="anchor-right">
+          <div class="case-block">
+            <div class="case-label">// the problem</div>
+            <p class="case-text">Industrial anomaly detectors fire false alarms when engines change operating conditions. Readings normal for high altitude look anomalous against sea-level baselines. Engineers learn to ignore alerts. Real failures get missed.</p>
+          </div>
+          <div class="case-block">
+            <div class="case-label">// the build</div>
+            <p class="case-text"><strong>FastAPI backend</strong> with a DoWhy causal DAG, KMeans regime clustering (k=6), and a 7-node LangGraph pipeline. Physics veto layer uses a G-test on isentropic sensor coupling to distinguish real degradation from sensor faults. <strong>React + TypeScript</strong> dashboard, PostgreSQL on Neon, deployed on Render.</p>
+          </div>
+          <div class="case-block">
+            <div class="case-label">// the result</div>
+            <p class="case-text"><strong>4.1× anomaly coverage</strong> vs Isolation Forest on FD001 (69% vs 17%). +53% earlier mean alert lead time. Global z-score baseline: F1 = 0.000 on multi-condition datasets. Regime-aware causal pipeline: F1 up to 0.352.</p>
+          </div>
+        </div>
+      </div>
+      <div class="anchor-bottom">
+        <span class="tag">Python</span><span class="tag">FastAPI</span>
+        <span class="tag">LangGraph</span><span class="tag">DoWhy</span>
+        <span class="tag">React</span><span class="tag">TypeScript</span>
+        <span class="tag">PostgreSQL</span><span class="tag">Recharts</span>
+      </div>
+    </div>
 
     <div class="project-anchor fade">
       <div class="anchor-top">
@@ -478,7 +512,7 @@
         <div class="sg-name">Backend & APIs</div>
         <div class="sg-items">
           <span class="sg-item">Django REST</span><span class="sg-item">Spring Boot</span>
-          <span class="sg-item">RESTful APIs</span><span class="sg-item">Microservices</span>
+          <span class="sg-item">FastAPI</span><span class="sg-item">RESTful APIs</span><span class="sg-item">Microservices</span>
         </div>
       </div>
       <div class="skill-group fade" style="transition-delay:.04s">
@@ -503,6 +537,13 @@
           <span class="sg-item">Terraform</span><span class="sg-item">Git</span><span class="sg-item">Linux</span>
         </div>
       </div>
+      <div class="skill-group fade" style="transition-delay:.16s">
+        <div class="sg-name">AI / ML</div>
+        <div class="sg-items">
+          <span class="sg-item">LangGraph</span><span class="sg-item">LangChain</span>
+          <span class="sg-item">DoWhy</span><span class="sg-item">scikit-learn</span><span class="sg-item">Groq</span>
+        </div>
+      </div>
     </div>
     <div class="learning-row fade">
       <span class="learning-label">Currently learning →</span>
@@ -520,7 +561,7 @@
     <h2 class="fade">Let's talk.</h2>
     <div class="contact-grid">
       <div class="contact-copy fade">
-        <p>Looking for <strong>software engineer roles starting May 2026</strong>. Full-stack, backend, or anything adjacent — especially at startups where you're expected to own things end-to-end.</p>
+        <p>Looking for <strong>software engineer roles</strong> — available now. Full-stack, backend, or anything adjacent — especially at startups where you're expected to own things end-to-end.</p>
         <p>Not looking for freelance, internships, or anything not starting in spring 2026. But if you want to talk software, architecture, or how terrible group projects are — always up for that.</p>
         <a href="/cdn-cgi/l/email-protection#107a71787e7166793e717463222650777d71797c3e737f7d" class="btn btn-primary" style="width:fit-content; margin-top:0.5rem;">Send an email ↗</a>
       </div>
